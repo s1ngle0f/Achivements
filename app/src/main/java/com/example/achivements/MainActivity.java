@@ -1,7 +1,13 @@
 package com.example.achivements;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -12,7 +18,7 @@ import com.example.achivements.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
 private ActivityMainBinding binding;
-
+public static BottomNavigationView BottomNV;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +31,7 @@ private ActivityMainBinding binding;
         }
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
+        BottomNV = navView;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -34,5 +41,4 @@ private ActivityMainBinding binding;
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
-
 }

@@ -51,10 +51,12 @@
                 android:layout_height="205dp"
                 android:background="@drawable/active_achivement_image_background" />
             <LinearLayout
+                android:id="@+id/current_achivement"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:gravity="left">
+                android:gravity="left"
+                android:clickable="true">
                 <androidx.cardview.widget.CardView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
