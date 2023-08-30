@@ -1,12 +1,30 @@
 package com.example.achivements.models;
 
-public class Achivement {
+import java.io.Serializable;
+
+public class Achivement implements Serializable {
     private double count = 0;
     private double id;
     private String text;
     private String status;
 
+    private User user;
+
     public Achivement () {}
+
+    public Achivement(double id, String text, String status, User user) {
+        this.id = id;
+        this.text = text;
+        this.status = status;
+        this.user = user;
+    }
+
+    public Achivement(String text, String status, User user) {
+        this.id = count++;
+        this.text = text;
+        this.status = status;
+        this.user = user;
+    }
 
     public Achivement(double id, String text, String status) {
         this.id = id;

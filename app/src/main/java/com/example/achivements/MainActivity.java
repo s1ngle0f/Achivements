@@ -48,21 +48,26 @@ public static User user = createUserInstance();
     }
 
     private static User createUserInstance(){
+        User _user = new User("some_login", "some_password", "some_description");
         //Создание друзей
         ArrayList<User> friends = new ArrayList<>();
         for(int i = 0; i < 10; i++){
             User _friend = new User("friend_login"+i, "friend_password"+i, "friend_description"+i);
-            _friend.AddAchivement(new Achivement("TODO Something friend" + i, "Complete"));
-            _friend.AddAchivement(new Achivement("TODO Something friend" + i, "Complete"));
-            _friend.AddAchivement(new Achivement("TODO Something friend" + i, "In progress"));
+            _friend.AddAchivement(new Achivement("TODO Something friend" + i, "Complete", _friend));
+            _friend.AddAchivement(new Achivement("TODO Something friend" + i, "Complete", _friend));
+            _friend.AddAchivement(new Achivement("TODO Something friend" + i, "In progress", _friend));
             friends.add(_friend);
         }
         //!Создание друзей
         ArrayList<Achivement> achivements = new ArrayList<>();
-        achivements.add(new Achivement("TODO MYSELF1", "Complete"));
-        achivements.add(new Achivement("TODO MYSELF2", "Complete"));
-        achivements.add(new Achivement("TODO MYSELF3", "Complete"));
-        achivements.add(new Achivement("TODO MYSELF4", "In progress"));
-        return new User("some_login", "some_password", "some_description", achivements, friends);
+        achivements.add(new Achivement("TODO MYSELF1", "Complete", _user));
+        achivements.add(new Achivement("TODO MYSELF2", "Complete", _user));
+        achivements.add(new Achivement("TODO MYSELF3", "Complete", _user));
+        achivements.add(new Achivement("TODO MYSELF4", "In progress", _user));
+
+        _user.setAchivements(achivements);
+        _user.setFriends(friends);
+
+        return _user;
     }
 }

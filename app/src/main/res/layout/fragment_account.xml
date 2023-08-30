@@ -89,12 +89,14 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp">
-                <LinearLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/account_achivement_rv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                </LinearLayout>
+                    android:layout_margin="6dp"
+                    android:nestedScrollingEnabled="true"
+                    android:scrollbars="vertical">
+                </androidx.recyclerview.widget.RecyclerView>
             </LinearLayout>
         </LinearLayout>
 

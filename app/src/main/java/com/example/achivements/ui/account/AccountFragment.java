@@ -4,16 +4,21 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
+import com.example.achivements.adapters.AchivementAdapter;
 import com.example.achivements.databinding.FragmentAccountBinding;
 import com.example.achivements.databinding.FragmentHomeBinding;
+import com.example.achivements.models.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,7 +74,11 @@ public class AccountFragment extends Fragment {
         binding = FragmentAccountBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         Bundle args = getArguments();
+        TextView accountLogin = root.findViewById(R.id.account_login);
+        TextView accountDescription = root.findViewById(R.id.account_descripton);
         ImageButton settingsButton = root.findViewById(R.id.account_settings_button);
+        RecyclerView accountLastAchivementsRV = root.findViewById(R.id.account_achivement_rv);
+        accountLastAchivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,15 +88,28 @@ public class AccountFragment extends Fragment {
             }
         });
         if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.VISIBLE);
+        User user = null;
         if(args != null) {
             if (args.getBoolean("isSelfAccount", true))
                 root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
             else
                 root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
+
+            if(args.getSerializable("account") != null){
+
+                if(args.getBoolean("isSelfAccount", true))
+                    user = MainActivity.user;
+                else
+                    user = (User) args.getSerializable("account");
+            }
         }else {
             root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
-//            root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
+            user = MainActivity.user;
         }
+        accountLogin.setText(user.getLogin());
+        AchivementAdapter achivementAdapter = new AchivementAdapter();
+        achivementAdapter.Add(user.getAchivements());
+        accountLastAchivementsRV.setAdapter(achivementAdapter);
         return root;
     }
 }

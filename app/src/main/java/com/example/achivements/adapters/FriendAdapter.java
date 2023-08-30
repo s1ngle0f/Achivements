@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.achivements.R;
 import com.example.achivements.databinding.FriendItemBinding;
-import com.example.achivements.models.Friend;
 import com.example.achivements.models.User;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHolder> {
@@ -50,6 +50,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHold
                 public void onClick(View view) {
                     Bundle args = new Bundle();
                     args.putBoolean("isSelfAccount", false);
+                    args.putSerializable("account", friend);
                     try{
                         Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_accountFragment, args);
                     }catch (Exception e){

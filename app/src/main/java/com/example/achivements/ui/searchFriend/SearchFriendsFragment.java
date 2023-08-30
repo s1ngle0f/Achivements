@@ -15,9 +15,7 @@ import android.view.ViewGroup;
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
 import com.example.achivements.adapters.FriendAdapter;
-import com.example.achivements.databinding.FragmentHomeBinding;
 import com.example.achivements.databinding.FragmentSearchFriendsBinding;
-import com.example.achivements.models.Friend;
 
 /**
  * A simple {@link Fragment} subclass.

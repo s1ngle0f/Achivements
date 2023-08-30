@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
+import com.example.achivements.models.Achivement;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
@@ -72,8 +73,9 @@ public class AchivementFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle args = getArguments();
+        Achivement achivement = (Achivement) args.getSerializable("achivement");
         TextView achivementText = view.findViewById(R.id.achivement_text);
         if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.GONE);
-        achivementText.setText(args.getString("achivementText"));
+        achivementText.setText(achivement.getText());
     }
 }

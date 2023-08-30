@@ -2,9 +2,10 @@ package com.example.achivements.models;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class User {
+public class User implements Serializable {
     private static double count = 0;
     private double id;
     private String login, password, description;
@@ -117,6 +118,14 @@ public class User {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setAchivements(ArrayList<Achivement> achivements) {
+        this.achivements = achivements;
+    }
+
+    public void setFriends(ArrayList<User> friends) {
+        this.friends = friends;
     }
 
     public ArrayList<Achivement> getAchivements() {

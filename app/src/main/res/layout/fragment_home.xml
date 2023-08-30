@@ -80,6 +80,7 @@
 <!--                    android:layout_marginLeft="7dp"-->
 <!--                    android:layout_gravity="center"/>-->
                 <TextView
+                    android:id="@+id/home_active_task"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="Some task one today"

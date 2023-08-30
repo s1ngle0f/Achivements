@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -19,11 +20,6 @@ import com.example.achivements.R;
 import com.example.achivements.adapters.AchivementAdapter;
 import com.example.achivements.adapters.FriendAdapter;
 import com.example.achivements.databinding.FragmentHomeBinding;
-import com.example.achivements.models.Achivement;
-import com.example.achivements.models.Friend;
-import com.example.achivements.models.User;
-
-import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
 
@@ -43,8 +39,6 @@ private FragmentHomeBinding binding;
 
         FriendAdapter friendAdapter = new FriendAdapter();
 
-        if (MainActivity.user.getFriends() == null)
-            throw new RuntimeException("Еблан!!!");
         System.out.println("Friends: " + MainActivity.user.getFriends());
         friendAdapter.Add(MainActivity.user.getFriends());
 
@@ -57,9 +51,12 @@ private FragmentHomeBinding binding;
 
         AchivementAdapter achivementAdapter = new AchivementAdapter();
 //        achivementAdapter.Add(new Achivement("TODO Something", "Complete", 1234));
-
+        achivementAdapter.Add(MainActivity.user.getAchivements());
         achivementsRV.setAdapter(achivementAdapter);
         //!Ачивки
+
+        TextView homeActiveAchivement = root.findViewById(R.id.home_active_task);
+        homeActiveAchivement.setText(MainActivity.user.GetActiveAchivement().getText());
 
         return root;
     }
@@ -74,6 +71,7 @@ private FragmentHomeBinding binding;
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString("achivementText", "Some text for test bundle");
+                bundle.putSerializable("achivement", MainActivity.user.GetActiveAchivement());
                 Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_achivementFragment, bundle);
             }
         });
