@@ -3,12 +3,17 @@ package com.example.achivements.ui.account;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
+import com.example.achivements.MainActivity;
 import com.example.achivements.R;
+import com.example.achivements.databinding.FragmentAccountBinding;
+import com.example.achivements.databinding.FragmentHomeBinding;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,6 +22,7 @@ import com.example.achivements.R;
  */
 public class AccountFragment extends Fragment {
 
+    private FragmentAccountBinding binding;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -60,7 +66,28 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_account, container, false);
+        binding = FragmentAccountBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+        Bundle args = getArguments();
+        ImageButton settingsButton = root.findViewById(R.id.account_settings_button);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("isSelfAccount", true);
+                Navigation.findNavController(view).navigate(R.id.action_accountFragment_to_editAccountFragment, bundle);
+            }
+        });
+        if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.VISIBLE);
+        if(args != null) {
+            if (args.getBoolean("isSelfAccount", true))
+                root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
+            else
+                root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
+        }else {
+            root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
+//            root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
+        }
+        return root;
     }
 }

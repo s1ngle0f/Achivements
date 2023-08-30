@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.searchFriend.SearchFriendsFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/home_corners">
+        <carbon.widget.LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:background="#E3E3E3"
+            app:carbon_cornerRadius="@dimen/home_corners">
+            <carbon.widget.ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:carbon_cornerRadius="15dp"
+                android:layout_marginTop="3dp"
+                android:background="#000"/>
+            <EditText
+                android:id="@+id/search_friend_search_field"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </carbon.widget.LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_friend_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="45dp"
+            android:nestedScrollingEnabled="true"
+            android:scrollbars="vertical">
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
+</FrameLayout>

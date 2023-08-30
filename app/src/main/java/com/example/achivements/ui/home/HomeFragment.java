@@ -16,9 +16,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
+import com.example.achivements.adapters.AchivementAdapter;
 import com.example.achivements.adapters.FriendAdapter;
 import com.example.achivements.databinding.FragmentHomeBinding;
+import com.example.achivements.models.Achivement;
 import com.example.achivements.models.Friend;
+import com.example.achivements.models.User;
+
+import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
 
@@ -37,14 +42,24 @@ private FragmentHomeBinding binding;
         friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
         FriendAdapter friendAdapter = new FriendAdapter();
-        friendAdapter.AddFriend(new Friend("123123", "Blablablabla", "Online"));
-        friendAdapter.AddFriend(new Friend("123123", "Blablablabla", "Online"));
-        friendAdapter.AddFriend(new Friend("123123", "Blablablabla", "Online"));
-        friendAdapter.AddFriend(new Friend("123123", "Blablablabla", "Online"));
-        friendAdapter.AddFriend(new Friend("123123", "Blablablabla", "Online"));
+
+        if (MainActivity.user.getFriends() == null)
+            throw new RuntimeException("Еблан!!!");
+        System.out.println("Friends: " + MainActivity.user.getFriends());
+        friendAdapter.Add(MainActivity.user.getFriends());
 
         friendsRV.setAdapter(friendAdapter);
         //!Друзья
+
+        //Ачивки
+        RecyclerView achivementsRV = root.findViewById(R.id.achivement_rv);
+        achivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+
+        AchivementAdapter achivementAdapter = new AchivementAdapter();
+//        achivementAdapter.Add(new Achivement("TODO Something", "Complete", 1234));
+
+        achivementsRV.setAdapter(achivementAdapter);
+        //!Ачивки
 
         return root;
     }

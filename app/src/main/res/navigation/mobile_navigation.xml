@@ -13,28 +13,41 @@
         <action
             android:id="@+id/action_navigation_home_to_achivementFragment"
             app:destination="@id/achivementFragment" />
+        <action
+            android:id="@+id/action_navigation_home_to_accountFragment"
+            app:destination="@id/accountFragment" />
     </fragment>
-
-    <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.achivements.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
-    <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.achivements.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
 
     <fragment
         android:id="@+id/achivementFragment"
         android:name="com.example.achivements.ui.achivement.AchivementFragment"
         android:label="fragment_achivement"
-        tools:layout="@layout/fragment_achivement" />
+        tools:layout="@layout/fragment_achivement" >
+        <action
+            android:id="@+id/action_achivementFragment_to_accountFragment"
+            app:destination="@id/accountFragment" />
+    </fragment>
     <fragment
         android:id="@+id/accountFragment"
         android:name="com.example.achivements.ui.account.AccountFragment"
         android:label="fragment_account"
-        tools:layout="@layout/fragment_account" />
+        tools:layout="@layout/fragment_account" >
+        <action
+            android:id="@+id/action_accountFragment_to_editAccountFragment"
+            app:destination="@id/editAccountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editAccountFragment"
+        android:name="com.example.achivements.ui.editAccount.EditAccountFragment"
+        android:label="fragment_edit_account"
+        tools:layout="@layout/fragment_edit_account" />
+    <fragment
+        android:id="@+id/searchFriendsFragment"
+        android:name="com.example.achivements.ui.searchFriend.SearchFriendsFragment"
+        android:label="fragment_search_friends"
+        tools:layout="@layout/fragment_search_friends" >
+        <action
+            android:id="@+id/action_searchFriendsFragment_to_accountFragment"
+            app:destination="@id/accountFragment" />
+    </fragment>
 </navigation>

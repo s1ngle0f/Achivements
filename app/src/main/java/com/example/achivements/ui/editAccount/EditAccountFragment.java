@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.achivements.MainActivity;
 import com.example.achivements.R;
 
 /**
@@ -60,7 +61,8 @@ public class EditAccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_account, container, false);
+        View root = inflater.inflate(R.layout.fragment_edit_account, container, false);
+        if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.GONE);
+        return root;
     }
 }
