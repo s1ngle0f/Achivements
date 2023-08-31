@@ -1,6 +1,7 @@
 package com.example.achivements.api;
 
 import com.example.achivements.models.Achivement;
+import com.example.achivements.models.ServerUser;
 import com.example.achivements.models.User;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 
 public class AchivementServerImitation implements IAchivementServer{
     private User user;
-    private HashMap<Double, User> users;
+    private HashMap<Double, ServerUser> users;
     private HashMap<Double, String> accessCodes;
 
     public AchivementServerImitation(User user) {
@@ -26,8 +27,8 @@ public class AchivementServerImitation implements IAchivementServer{
     }
 
     @Override
-    public void CreateUser(User user) {
-        users.put(user.getId(), user);
+    public void CreateUser(User user, String password) {
+        users.put(user.getId(), new ServerUser(user, password));
     }
 
     @Override
@@ -41,7 +42,7 @@ public class AchivementServerImitation implements IAchivementServer{
     }
 
     @Override
-    public String GetAccessCode() {
+    public String GetAccessCode(User user, String password) {
         return null;
     }
 

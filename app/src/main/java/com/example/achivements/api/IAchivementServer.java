@@ -9,13 +9,13 @@ public interface IAchivementServer {
     boolean IsExistUser();
     boolean IsExistUser(User user);
 
-    void CreateUser(User user);
+    void CreateUser(User user, String password);
 
     Achivement GetNewAchivement();
 
     ArrayList<Achivement> GetAchivements(int count);
 
-    String GetAccessCode();
+    String GetAccessCode(User user, String password);
 
     void EditAchivement(Achivement achivement);
 

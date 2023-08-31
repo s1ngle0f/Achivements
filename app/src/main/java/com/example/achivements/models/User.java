@@ -8,47 +8,47 @@ import java.util.ArrayList;
 public class User implements Serializable {
     private static double count = 0;
     private double id;
-    private String login, password, description;
+    private String login, accessToken, description;
     private ArrayList<Achivement> achivements = new ArrayList<>();
     private ArrayList<User> friends = new ArrayList<>();
 
-    public User(double id, String login, String password, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
+    public User(double id, String login, String accessToken, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
         this.id = id;
         this.login = login;
-        this.password = password;
+        this.accessToken = accessToken;
         this.description = description;
         this.achivements = achivements;
         this.friends = friends;
     }
 
-    public User(String login, String password, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
+    public User(String login, String accessToken, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
         this.id = count++;
         this.login = login;
-        this.password = password;
+        this.accessToken = accessToken;
         this.description = description;
         this.achivements = achivements;
         this.friends = friends;
     }
 
-    public User(String login, String password, String description, ArrayList<Achivement> achivements) {
+    public User(String login, String accessToken, String description, ArrayList<Achivement> achivements) {
         this.id = count++;
         this.login = login;
-        this.password = password;
+        this.accessToken = accessToken;
         this.description = description;
         this.achivements = achivements;
     }
 
-    public User(double id, String login, String password, String description) {
+    public User(double id, String login, String accessToken, String description) {
         this.id = id;
         this.login = login;
-        this.password = password;
+        this.accessToken = accessToken;
         this.description = description;
     }
 
-    public User(String login, String password, String description) {
+    public User(String login, String accessToken, String description) {
         this.id = count++;
         this.login = login;
-        this.password = password;
+        this.accessToken = accessToken;
         this.description = description;
     }
 
@@ -104,12 +104,12 @@ public class User implements Serializable {
         this.login = login;
     }
 
-    public String getPassword() {
-        return password;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public String getDescription() {
@@ -147,7 +147,7 @@ public class User implements Serializable {
         for (Achivement achivement : achivements) {
             _achivements.add(achivement);
         }
-        User user = new User(login, password, description, _achivements, _friends);
+        User user = new User(login, accessToken, description, _achivements, _friends);
         return user;
     }
 }

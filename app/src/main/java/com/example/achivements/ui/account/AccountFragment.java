@@ -84,6 +84,7 @@ public class AccountFragment extends Fragment {
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putBoolean("isSelfAccount", true);
+                bundle.putSerializable("account", MainActivity.user);
                 Navigation.findNavController(view).navigate(R.id.action_accountFragment_to_editAccountFragment, bundle);
             }
         });
@@ -107,6 +108,7 @@ public class AccountFragment extends Fragment {
             user = MainActivity.user;
         }
         accountLogin.setText(user.getLogin());
+        accountDescription.setText(user.getDescription());
         AchivementAdapter achivementAdapter = new AchivementAdapter();
         achivementAdapter.Add(user.getAchivements());
         accountLastAchivementsRV.setAdapter(achivementAdapter);

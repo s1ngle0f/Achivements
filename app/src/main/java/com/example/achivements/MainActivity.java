@@ -1,6 +1,9 @@
 package com.example.achivements;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.TextView;
 
@@ -16,17 +19,21 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.example.achivements.databinding.ActivityMainBinding;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
 private ActivityMainBinding binding;
+private SharedPreferences sharedPreferences;
 public static BottomNavigationView BottomNV;
 public static User user = createUserInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        System.out.println("START MAINACTIVITY");
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -45,6 +52,28 @@ public static User user = createUserInstance();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        sharedPreferences = getSharedPreferences("mySettings", Context.MODE_PRIVATE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("!onResume!");
+        if(sharedPreferences != null)
+            if(sharedPreferences.contains("user")){
+                String userJson = sharedPreferences.getString("user", "");
+            }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        System.out.println("!onPause!");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userLogin", user.getLogin());
+        editor.putString("userAccessToken", user.getAccessToken());
+        editor.apply();
     }
 
     private static User createUserInstance(){
