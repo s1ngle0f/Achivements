@@ -9,11 +9,19 @@ import java.util.HashMap;
 
 public class AchivementServerImitation implements IAchivementServer{
     private User user;
-    private HashMap<Double, ServerUser> users;
-    private HashMap<Double, String> accessCodes;
+    private HashMap<Integer, User> users = new HashMap<>();
+    private HashMap<Integer, String> passwords = new HashMap<>();
+    private HashMap<Integer, String> accessCodes = new HashMap<>();
 
     public AchivementServerImitation(User user) {
         this.user = user;
+        for(int i = 10; i < 30; i++){
+            User _user = new User("any_user" + i, null, "any_description" + i);
+            _user.AddAchivement(new Achivement("TODO Something any man" + i, "Complete", _user));
+            _user.AddAchivement(new Achivement("TODO Something any man" + i, "InProgress", _user));
+            users.put(i, _user);
+            passwords.put(i, "123");
+        }
     }
 
     @Override
@@ -59,11 +67,29 @@ public class AchivementServerImitation implements IAchivementServer{
     @Override
     public ArrayList<User> GetUsers() {
         int count = 10;
-        return null;
+        return GetUsers(count);
     }
 
     @Override
     public ArrayList<User> GetUsers(int count) {
-        return null;
+        ArrayList<User> _users = new ArrayList<>();
+        int counter = 0;
+        for (User _user : users.values()) {
+            if(counter >= count)
+                break;
+            _users.add(_user);
+            counter++;
+        }
+        return _users;
+    }
+
+    @Override
+    public ArrayList<User> GetUsers(String name) {
+        ArrayList<User> _users = new ArrayList<>();
+        for (User _user : users.values()) {
+            if(_user.getLogin().contains(name))
+                _users.add(_user);
+        }
+        return _users;
     }
 }

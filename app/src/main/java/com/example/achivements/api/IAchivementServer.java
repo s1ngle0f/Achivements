@@ -22,4 +22,5 @@ public interface IAchivementServer {
     void EditUser(User user);
     ArrayList<User> GetUsers();
     ArrayList<User> GetUsers(int count);
+    ArrayList<User> GetUsers(String name);
 }

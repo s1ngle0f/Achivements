@@ -6,13 +6,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class User implements Serializable {
-    private static double count = 0;
-    private double id;
+    private static int count = 0;
+    private int id;
     private String login, accessToken, description;
     private ArrayList<Achivement> achivements = new ArrayList<>();
     private ArrayList<User> friends = new ArrayList<>();
 
-    public User(double id, String login, String accessToken, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
+    public User(int id, String login, String accessToken, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
         this.id = id;
         this.login = login;
         this.accessToken = accessToken;
@@ -38,7 +38,7 @@ public class User implements Serializable {
         this.achivements = achivements;
     }
 
-    public User(double id, String login, String accessToken, String description) {
+    public User(int id, String login, String accessToken, String description) {
         this.id = id;
         this.login = login;
         this.accessToken = accessToken;
@@ -52,7 +52,7 @@ public class User implements Serializable {
         this.description = description;
     }
 
-    public User(double id) {
+    public User(int id) {
         this.id = id;
     }
 
@@ -61,7 +61,9 @@ public class User implements Serializable {
     }
 
     public Achivement GetActiveAchivement(){
-        return achivements.get(achivements.size()-1);
+        if(achivements.size() > 0)
+            return achivements.get(achivements.size()-1);
+        return null;
     }
 
     public void AddAchivement(Achivement achivement){
@@ -88,11 +90,11 @@ public class User implements Serializable {
         friends.remove(friend);
     }
 
-    public double getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(double id) {
+    public void setId(int id) {
         this.id = id;
     }
 

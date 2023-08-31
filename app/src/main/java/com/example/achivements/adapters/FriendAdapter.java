@@ -43,8 +43,13 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHold
         }
 
         public void bind(User friend){
-            friendItemBinding.statusText.setText(friend.GetActiveAchivement().getStatus());
-            friendItemBinding.achivement.setText(friend.GetActiveAchivement().getText());
+            if(friend.GetActiveAchivement() != null) {
+                friendItemBinding.statusText.setText(friend.GetActiveAchivement().getStatus());
+                friendItemBinding.achivement.setText(friend.GetActiveAchivement().getText());
+            }else{
+                friendItemBinding.statusText.setText("");
+                friendItemBinding.achivement.setText("");
+            }
             friendItemBinding.friendItemCV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -70,6 +75,11 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHold
         for (User friend : friends) {
             friendsList.add(friend);
         }
+        notifyDataSetChanged();
+    }
+
+    public void Set(ArrayList<User> friends){
+        friendsList = friends;
         notifyDataSetChanged();
     }
 }

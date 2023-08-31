@@ -33,30 +33,31 @@ private FragmentHomeBinding binding;
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        //Друзья
-        RecyclerView friendsRV = root.findViewById(R.id.friends_rv);
-        friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+        if(MainActivity.user != null) {//Друзья
+            RecyclerView friendsRV = root.findViewById(R.id.friends_rv);
+            friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
-        FriendAdapter friendAdapter = new FriendAdapter();
+            FriendAdapter friendAdapter = new FriendAdapter();
 
-        System.out.println("Friends: " + MainActivity.user.getFriends());
-        friendAdapter.Add(MainActivity.user.getFriends());
+            System.out.println("Friends: " + MainActivity.user.getFriends());
+            friendAdapter.Add(MainActivity.user.getFriends());
 
-        friendsRV.setAdapter(friendAdapter);
-        //!Друзья
+            friendsRV.setAdapter(friendAdapter);
+            //!Друзья
 
-        //Ачивки
-        RecyclerView achivementsRV = root.findViewById(R.id.achivement_rv);
-        achivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+            //Ачивки
+            RecyclerView achivementsRV = root.findViewById(R.id.achivement_rv);
+            achivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
-        AchivementAdapter achivementAdapter = new AchivementAdapter();
+            AchivementAdapter achivementAdapter = new AchivementAdapter();
 //        achivementAdapter.Add(new Achivement("TODO Something", "Complete", 1234));
-        achivementAdapter.Add(MainActivity.user.getAchivements());
-        achivementsRV.setAdapter(achivementAdapter);
-        //!Ачивки
+            achivementAdapter.Add(MainActivity.user.getAchivements());
+            achivementsRV.setAdapter(achivementAdapter);
+            //!Ачивки
 
-        TextView homeActiveAchivement = root.findViewById(R.id.home_active_task);
-        homeActiveAchivement.setText(MainActivity.user.GetActiveAchivement().getText());
+            TextView homeActiveAchivement = root.findViewById(R.id.home_active_task);
+            homeActiveAchivement.setText(MainActivity.user.GetActiveAchivement().getText());
+        }
 
         return root;
     }

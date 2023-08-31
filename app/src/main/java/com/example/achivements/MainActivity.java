@@ -7,6 +7,8 @@ import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.achivements.api.AchivementServerImitation;
+import com.example.achivements.api.IAchivementServer;
 import com.example.achivements.models.Achivement;
 import com.example.achivements.models.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -28,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
 private ActivityMainBinding binding;
 private SharedPreferences sharedPreferences;
 public static BottomNavigationView BottomNV;
-public static User user = createUserInstance();
+//public static User user = createUserInstance();
+public static User user = null;
+public static IAchivementServer ServerEmulator = new AchivementServerImitation(user);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -8,9 +8,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
@@ -71,15 +74,34 @@ public class SearchFriendsFragment extends Fragment {
         fragmentSearchFriendsBinding = FragmentSearchFriendsBinding.inflate(inflater, container, false);
         View root = fragmentSearchFriendsBinding.getRoot();
 
-        //Друзья
-        RecyclerView friendsRV = root.findViewById(R.id.search_friend_rv);
-        friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+        EditText searcher = root.findViewById(R.id.search_friend_search_field);
 
-        FriendAdapter friendAdapter = new FriendAdapter();
-        friendAdapter.Add(MainActivity.user.getFriends());
+        if(MainActivity.ServerEmulator != null){//Друзья
+            RecyclerView friendsRV = root.findViewById(R.id.search_friend_rv);
+            friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
-        friendsRV.setAdapter(friendAdapter);
-        //!Друзья
+            FriendAdapter friendAdapter = new FriendAdapter();
+            friendAdapter.Add(MainActivity.ServerEmulator.GetUsers());
+
+            friendsRV.setAdapter(friendAdapter);
+            //!Друзья
+            searcher.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    friendAdapter.Set(MainActivity.ServerEmulator.GetUsers(searcher.getText().toString()));
+                }
+            });
+        }
 
         return root;
     }

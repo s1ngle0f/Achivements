@@ -91,27 +91,28 @@ public class AccountFragment extends Fragment {
         if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.VISIBLE);
         User user = null;
         if(args != null) {
-            if (args.getBoolean("isSelfAccount", true))
+            if (args.getBoolean("isSelfAccount", true)) {
                 root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
-            else
-                root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
-
-            if(args.getSerializable("account") != null){
-
-                if(args.getBoolean("isSelfAccount", true))
-                    user = MainActivity.user;
-                else
-                    user = (User) args.getSerializable("account");
+                user = MainActivity.user;
             }
-        }else {
+            else{
+                root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
+                user = (User) args.getSerializable("account");
+            }
+        }
+        else {
             root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
             user = MainActivity.user;
         }
-        accountLogin.setText(user.getLogin());
-        accountDescription.setText(user.getDescription());
-        AchivementAdapter achivementAdapter = new AchivementAdapter();
-        achivementAdapter.Add(user.getAchivements());
-        accountLastAchivementsRV.setAdapter(achivementAdapter);
+        if(user != null) {
+            accountLogin.setText(user.getLogin());
+            accountDescription.setText(user.getDescription());
+            AchivementAdapter achivementAdapter = new AchivementAdapter();
+            achivementAdapter.Add(user.getAchivements());
+            accountLastAchivementsRV.setAdapter(achivementAdapter);
+        }else{
+            root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
+        }
         return root;
     }
 }
