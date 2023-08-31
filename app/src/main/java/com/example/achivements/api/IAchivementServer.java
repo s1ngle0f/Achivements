@@ -7,15 +7,15 @@ import java.util.ArrayList;
 
 public interface IAchivementServer {
     boolean IsExistUser();
-    boolean IsExistUser(User user);
+    boolean IsExistUser(String login, String password);
 
-    void CreateUser(User user, String password);
+    String CreateUser(String login, String password);
 
     Achivement GetNewAchivement();
 
     ArrayList<Achivement> GetAchivements(int count);
 
-    String GetAccessCode(User user, String password);
+    String GetAccessCode(String login, String password);
 
     void EditAchivement(Achivement achivement);
 
@@ -23,4 +23,6 @@ public interface IAchivementServer {
     ArrayList<User> GetUsers();
     ArrayList<User> GetUsers(int count);
     ArrayList<User> GetUsers(String name);
+    User GetUserInfo(String login, String accessToken);
+    User AddFriend(String login, String accessToken, User friend);
 }

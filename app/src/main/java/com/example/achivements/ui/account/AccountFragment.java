@@ -1,5 +1,6 @@
 package com.example.achivements.ui.account;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,11 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.achivements.LoginActivity;
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
+import com.example.achivements.SettingsActivity;
 import com.example.achivements.adapters.AchivementAdapter;
 import com.example.achivements.databinding.FragmentAccountBinding;
 import com.example.achivements.databinding.FragmentHomeBinding;
@@ -77,15 +81,27 @@ public class AccountFragment extends Fragment {
         TextView accountLogin = root.findViewById(R.id.account_login);
         TextView accountDescription = root.findViewById(R.id.account_descripton);
         ImageButton settingsButton = root.findViewById(R.id.account_settings_button);
+        Button subscribeButton = root.findViewById(R.id.account_subscribe_button);
         RecyclerView accountLastAchivementsRV = root.findViewById(R.id.account_achivement_rv);
         accountLastAchivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("isSelfAccount", true);
-                bundle.putSerializable("account", MainActivity.user);
-                Navigation.findNavController(view).navigate(R.id.action_accountFragment_to_editAccountFragment, bundle);
+                Intent myIntent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(myIntent);
+            }
+        });
+        subscribeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(MainActivity.user == null){
+                    Intent myIntent = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(myIntent);
+                }else{
+                    MainActivity.user.AddFriend((User) args.getSerializable("account"));
+                    MainActivity.ServerEmulator.EditUser(MainActivity.user);
+                    subscribeButton.setVisibility(View.GONE);
+                }
             }
         });
         if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.VISIBLE);
@@ -107,11 +123,17 @@ public class AccountFragment extends Fragment {
         if(user != null) {
             accountLogin.setText(user.getLogin());
             accountDescription.setText(user.getDescription());
-            AchivementAdapter achivementAdapter = new AchivementAdapter();
-            achivementAdapter.Add(user.getAchivements());
-            accountLastAchivementsRV.setAdapter(achivementAdapter);
+            if(MainActivity.user.getFriends().contains(user))
+                root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
+            if(user.getAchivements() != null){
+                AchivementAdapter achivementAdapter = new AchivementAdapter();
+                achivementAdapter.Add(user.getAchivements());
+                accountLastAchivementsRV.setAdapter(achivementAdapter);
+            }
         }else{
             root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
+            Intent myIntent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(myIntent);
         }
         return root;
     }

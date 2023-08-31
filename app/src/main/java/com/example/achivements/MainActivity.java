@@ -1,6 +1,7 @@
 package com.example.achivements;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -22,13 +23,15 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.example.achivements.databinding.ActivityMainBinding;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
 private ActivityMainBinding binding;
-private SharedPreferences sharedPreferences;
+public static SharedPreferences sharedPreferences;
+public static SharedPreferences.Editor editor;
 public static BottomNavigationView BottomNV;
 //public static User user = createUserInstance();
 public static User user = null;
@@ -58,6 +61,7 @@ public static IAchivementServer ServerEmulator = new AchivementServerImitation(u
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         sharedPreferences = getSharedPreferences("mySettings", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
     }
 
     @Override
@@ -74,10 +78,12 @@ public static IAchivementServer ServerEmulator = new AchivementServerImitation(u
     protected void onPause() {
         super.onPause();
         System.out.println("!onPause!");
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("userLogin", user.getLogin());
-        editor.putString("userAccessToken", user.getAccessToken());
-        editor.apply();
+        if(user!=null)
+        {
+            editor.putString("userLogin", user.getLogin());
+            editor.putString("userAccessToken", user.getAccessToken());
+            editor.apply();
+        }
     }
 
     private static User createUserInstance(){

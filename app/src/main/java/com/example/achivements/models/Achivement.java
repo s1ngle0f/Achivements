@@ -61,4 +61,14 @@ public class Achivement implements Serializable {
     public void setId(double id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "Achivement{" +
+                "count=" + count +
+                ", id=" + id +
+                ", text='" + text + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

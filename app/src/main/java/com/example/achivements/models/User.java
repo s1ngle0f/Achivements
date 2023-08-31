@@ -52,6 +52,11 @@ public class User implements Serializable {
         this.description = description;
     }
 
+    public User(String login) {
+        this.id = count++;
+        this.login = login;
+    }
+
     public User(int id) {
         this.id = id;
     }
@@ -77,12 +82,14 @@ public class User implements Serializable {
     }
 
     public void AddFriend(User friend){
-        friends.add(friend);
+        if(!friends.contains(friend))
+            friends.add(friend);
     }
 
     public void AddFriend(ArrayList<User> friends){
         for (User friend : friends) {
-            this.friends.add(friend);
+            if(!this.friends.contains(friend))
+                this.friends.add(friend);
         }
     }
 
@@ -151,5 +158,16 @@ public class User implements Serializable {
         }
         User user = new User(login, accessToken, description, _achivements, _friends);
         return user;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                ", accessToken='" + accessToken + '\'' +
+                ", description='" + description + '\'' +
+                ", achivements=" + achivements +
+                '}';
     }
 }

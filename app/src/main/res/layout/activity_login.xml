@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="257dp"
+        android:layout_height="379dp"
+        android:layout_marginStart="77dp"
+        android:layout_marginTop="176dp"
+        android:layout_marginEnd="77dp"
+        android:layout_marginBottom="176dp"
+        app:cardBackgroundColor="#EAEAEA"
+        app:cardCornerRadius="@dimen/home_corners"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <EditText
+            android:id="@+id/login_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:ems="10"
+            android:inputType="text"
+            android:tooltipText="login"
+            android:layout_gravity="center|top"/>
+
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:tooltipText="password"
+            android:layout_gravity="center|top"/>
+
+        <EditText
+            android:id="@+id/login_password_twice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:visibility="gone"
+            android:tooltipText="password"
+            android:layout_gravity="center|top"/>
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="250dp"
+            android:text="ВОЙТИ"
+            android:layout_gravity="center|top"/>
+
+        <Button
+            android:id="@+id/login_to_reg"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="300dp"
+            android:text="РЕГИСТРАЦИЯ"
+            android:textSize="10sp"
+            android:layout_gravity="center|top"/>
+    </androidx.cardview.widget.CardView>
+<!--    <EditText-->
+<!--        android:id="@+id/login_login"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="284dp"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="text"-->
+<!--        android:tooltipText="login"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.502"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/login_password"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="12dp"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="textPassword"-->
+<!--        android:tooltipText="password"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.502"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/login_login" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/button"-->
+<!--        android:layout_width="150dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="12dp"-->
+<!--        android:text="ВОЙТИ"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.498"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/login_password" />-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
