@@ -110,20 +110,27 @@ public class AccountFragment extends Fragment {
             if (args.getBoolean("isSelfAccount", true)) {
                 root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
                 user = MainActivity.user;
+                System.out.println("ISSELF ACC " + user);
             }
             else{
                 root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
                 user = (User) args.getSerializable("account");
+                if(MainActivity.user == user) {
+                    root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
+                    root.findViewById(R.id.account_settings_button).setVisibility(View.VISIBLE);
+                }
+                System.out.println("NOSELF ACC " + user);
             }
         }
         else {
             root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
             user = MainActivity.user;
+            System.out.println("ACC " + user);
         }
         if(user != null) {
             accountLogin.setText(user.getLogin());
             accountDescription.setText(user.getDescription());
-            if(MainActivity.user.getFriends().contains(user))
+            if(MainActivity.user.getFriends() != null && MainActivity.user.getFriends().contains(user))
                 root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
             if(user.getAchivements() != null){
                 AchivementAdapter achivementAdapter = new AchivementAdapter();

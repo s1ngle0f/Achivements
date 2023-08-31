@@ -1,6 +1,10 @@
 package com.example.achivements.models;
 
+import android.net.Uri;
+
 import androidx.annotation.NonNull;
+
+import com.example.achivements.MainActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,8 +14,9 @@ public class User implements Serializable {
     private int id;
     private String login, accessToken, description;
     private ArrayList<Achivement> achivements = new ArrayList<>();
-    private ArrayList<User> friends = new ArrayList<>();
-
+    private transient ArrayList<User> friends = new ArrayList<>();
+    private ArrayList<Integer> friendIds = new ArrayList<>();
+    private Uri avatarImage;
     public User(int id, String login, String accessToken, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
         this.id = id;
         this.login = login;
@@ -71,6 +76,17 @@ public class User implements Serializable {
         return null;
     }
 
+    public void ResetFriends(){
+        ArrayList<User> _friends = MainActivity.ServerEmulator.GetUsers(friendIds);
+        friends.clear();
+        AddFriend(_friends);
+    }
+
+    public void ResetFriends(ArrayList<User> _friends){
+        friends.clear();
+        AddFriend(_friends);
+    }
+
     public void AddAchivement(Achivement achivement){
         achivements.add(achivement);
     }
@@ -82,19 +98,40 @@ public class User implements Serializable {
     }
 
     public void AddFriend(User friend){
-        if(!friends.contains(friend))
+        if(!friends.contains(friend)){
             friends.add(friend);
+            friendIds.add(friend.getId());
+        }
     }
 
     public void AddFriend(ArrayList<User> friends){
         for (User friend : friends) {
-            if(!this.friends.contains(friend))
+            if(!this.friends.contains(friend)){
                 this.friends.add(friend);
+                friendIds.add(friend.getId());
+            }
         }
     }
 
     public void DeleteFriend(User friend){
-        friends.remove(friend);
+        if(!this.friends.contains(friend)){
+            friends.remove(friend);
+            friendIds.remove(friend.getId());
+        }
+    }
+
+    public void SetUserForAchivements(){
+        for (Achivement achivement : achivements) {
+            achivement.setUser(this);
+        }
+    }
+
+    public Uri getAvatarImage() {
+        return avatarImage;
+    }
+
+    public void setAvatarImage(Uri avatarImage) {
+        this.avatarImage = avatarImage;
     }
 
     public int getId() {
@@ -129,12 +166,24 @@ public class User implements Serializable {
         this.description = description;
     }
 
+    public ArrayList<Integer> getFriendIds() {
+        return friendIds;
+    }
+
+    public void setFriendIds(ArrayList<Integer> friendIds) {
+        this.friendIds = friendIds;
+    }
+
     public void setAchivements(ArrayList<Achivement> achivements) {
         this.achivements = achivements;
     }
 
     public void setFriends(ArrayList<User> friends) {
         this.friends = friends;
+        friendIds.clear();
+        for (User friend : friends) {
+            friendIds.add(friend.getId());
+        }
     }
 
     public ArrayList<Achivement> getAchivements() {

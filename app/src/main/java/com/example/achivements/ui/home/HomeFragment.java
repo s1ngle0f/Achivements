@@ -32,7 +32,7 @@ private FragmentHomeBinding binding;
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
+        System.out.println("HOME_Fragment");
         if(MainActivity.user != null) {//Друзья
             if(MainActivity.user.getFriends() != null){
                 RecyclerView friendsRV = root.findViewById(R.id.friends_rv);

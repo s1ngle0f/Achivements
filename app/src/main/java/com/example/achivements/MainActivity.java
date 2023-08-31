@@ -31,23 +31,45 @@ public class MainActivity extends AppCompatActivity {
 
 private ActivityMainBinding binding;
 public static SharedPreferences sharedPreferences;
+public static SharedPreferences ServerSharedPreferences;
 public static SharedPreferences.Editor editor;
 public static BottomNavigationView BottomNV;
 //public static User user = createUserInstance();
 public static User user = null;
-public static IAchivementServer ServerEmulator = new AchivementServerImitation(user);
+public static AchivementServerImitation ServerEmulator; //При работе с реальным бэком вернуть интерфейс
+public static MainActivity mainActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         System.out.println("START MAINACTIVITY");
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        Bundle args = getIntent().getExtras();
+
+        if(sharedPreferences == null){
+            sharedPreferences = getSharedPreferences("mySettings", Context.MODE_PRIVATE);
+            editor = sharedPreferences.edit();
+        }
+        if(ServerSharedPreferences == null)
+            ServerSharedPreferences = getSharedPreferences("serverSettings", Context.MODE_PRIVATE);
+
+        if(ServerEmulator == null)
+            ServerEmulator = new AchivementServerImitation(user);
+
+        if(user == null)
+            user = ServerEmulator.GetUserInfo(sharedPreferences.getString("login", ""), sharedPreferences.getString("accessToken", ""));
+        System.out.println(sharedPreferences.getString("login", "") + " " + sharedPreferences.getString("accessToken", ""));
+        System.out.println(user);
+        System.out.println(ServerSharedPreferences.getString("test", "not test"));
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        mainActivity = this;
+        /////////////////////////////////////
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         BottomNV = navView;
@@ -59,15 +81,13 @@ public static IAchivementServer ServerEmulator = new AchivementServerImitation(u
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-
-        sharedPreferences = getSharedPreferences("mySettings", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         System.out.println("!onResume!");
+        System.out.println(user);
         if(sharedPreferences != null)
             if(sharedPreferences.contains("user")){
                 String userJson = sharedPreferences.getString("user", "");
@@ -78,12 +98,20 @@ public static IAchivementServer ServerEmulator = new AchivementServerImitation(u
     protected void onPause() {
         super.onPause();
         System.out.println("!onPause!");
+        System.out.println(user);
         if(user!=null)
         {
             editor.putString("userLogin", user.getLogin());
             editor.putString("userAccessToken", user.getAccessToken());
             editor.apply();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        ServerEmulator.Destructor();
+        System.out.println("STOP");
+        super.onStop();
     }
 
     private static User createUserInstance(){

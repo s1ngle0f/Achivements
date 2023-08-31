@@ -1,18 +1,20 @@
 package com.example.achivements.models;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 
 public class Achivement implements Serializable {
-    private double count = 0;
-    private double id;
+    private int count = 0;
+    private int id;
     private String text;
     private String status;
-
-    private User user;
+    private Uri image;
+    private transient User user;
 
     public Achivement () {}
 
-    public Achivement(double id, String text, String status, User user) {
+    public Achivement(int id, String text, String status, User user) {
         this.id = id;
         this.text = text;
         this.status = status;
@@ -26,7 +28,7 @@ public class Achivement implements Serializable {
         this.user = user;
     }
 
-    public Achivement(double id, String text, String status) {
+    public Achivement(int id, String text, String status) {
         this.id = id;
         this.text = text;
         this.status = status;
@@ -36,6 +38,22 @@ public class Achivement implements Serializable {
         this.id = count++;
         this.text = text;
         this.status = status;
+    }
+
+    public Uri getImage() {
+        return image;
+    }
+
+    public void setImage(Uri image) {
+        this.image = image;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getText() {
@@ -54,11 +72,11 @@ public class Achivement implements Serializable {
         this.status = status;
     }
 
-    public double getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(double id) {
+    public void setId(int id) {
         this.id = id;
     }
 

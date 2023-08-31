@@ -50,9 +50,11 @@ public class LoginActivity extends AppCompatActivity {
                         MainActivity.editor.putString("accessToken", accessToken);
                         MainActivity.editor.apply();
                         newUser.setAccessToken(accessToken);
+                        System.out.println("newUser " + newUser);
                         MainActivity.user = newUser;
                     }
                     Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                    myIntent.putExtra("user", newUser);
                     startActivity(myIntent);
                 }
             }
