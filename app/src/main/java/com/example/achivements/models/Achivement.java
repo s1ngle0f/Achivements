@@ -1,7 +1,5 @@
 package com.example.achivements.models;
 
-import android.net.Uri;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -17,14 +15,14 @@ public class Achivement implements Serializable {
     private int id;
     private String text;
     private Status status = Status.ACTIVE;
-    private Uri image;
+    private String image;
     private ArrayList<Comment> comments = new ArrayList<>();
     private transient User user;
 
     public Achivement () {}
 
 
-    public Achivement(int id, String text, Status status, Uri image, ArrayList<Comment> comments, User user) {
+    public Achivement(int id, String text, Status status, String image, ArrayList<Comment> comments, User user) {
         this.id = id;
         this.text = text;
         this.status = status;
@@ -33,7 +31,7 @@ public class Achivement implements Serializable {
         this.user = user;
     }
 
-    public Achivement(String text, Status status, Uri image, ArrayList<Comment> comments, User user) {
+    public Achivement(String text, Status status, String image, ArrayList<Comment> comments, User user) {
         this.text = text;
         this.status = status;
         this.image = image;
@@ -67,11 +65,11 @@ public class Achivement implements Serializable {
         this.status = status;
     }
 
-    public Uri getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(Uri image) {
+    public void setImage(String image) {
         this.image = image;
     }
 

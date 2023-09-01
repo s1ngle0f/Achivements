@@ -20,8 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="320dp"
                 android:background="#F9FAFC"
-                android:scaleType="fitCenter"
-                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
                 android:src="@drawable/empty_avatar"
                 app:carbon_cornerRadiusBottomEnd="@dimen/home_corners"
                 app:carbon_cornerRadiusBottomStart="@dimen/home_corners"></carbon.widget.ImageView>
