@@ -91,19 +91,6 @@ public class AccountFragment extends Fragment {
                 startActivity(myIntent);
             }
         });
-        subscribeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(MainActivity.user == null){
-                    Intent myIntent = new Intent(getActivity(), LoginActivity.class);
-                    startActivity(myIntent);
-                }else{
-                    MainActivity.user.AddFriend((User) args.getSerializable("account"));
-                    MainActivity.ServerEmulator.EditUser(MainActivity.user);
-                    subscribeButton.setVisibility(View.GONE);
-                }
-            }
-        });
         if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.VISIBLE);
         User user = null;
         if(args != null) {
@@ -130,8 +117,29 @@ public class AccountFragment extends Fragment {
         if(user != null) {
             accountLogin.setText(user.getLogin());
             accountDescription.setText(user.getDescription());
-            if(MainActivity.user != null && MainActivity.user.getFriends() != null && MainActivity.user.getFriends().contains(user))
-                root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
+            if(MainActivity.user != null && MainActivity.user.getFriends() != null && MainActivity.user.getFriends().contains(user)){
+                subscribeButton.setText("Отписаться");
+            }
+            User finalUser = user;
+            subscribeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(MainActivity.user == null){
+                        Intent myIntent = new Intent(getActivity(), LoginActivity.class);
+                        startActivity(myIntent);
+                    }else{
+                        if(MainActivity.user.getFriends().contains(finalUser)){
+                            subscribeButton.setText("Отписаться");
+                            MainActivity.user.DeleteFriend(finalUser);
+                        }else{
+                            subscribeButton.setText("Подписаться");
+                            MainActivity.user.AddFriend(finalUser);
+                        }
+
+                        MainActivity.ServerEmulator.EditUser(MainActivity.user);
+                    }
+                }
+            });
             if(user.getAchivements() != null){
                 AchivementAdapter achivementAdapter = new AchivementAdapter();
                 achivementAdapter.Add(user.getAchivements());

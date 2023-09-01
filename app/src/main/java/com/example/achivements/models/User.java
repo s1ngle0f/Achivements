@@ -117,9 +117,12 @@ public class User implements Serializable {
     }
 
     public void DeleteFriend(User friend){
-        if(!this.friends.contains(friend)){
+        if(this.friends.contains(friend)){
             friends.remove(friend);
-            friendIds.remove(friend.getId());
+            for(int i = 0; i < friendIds.size(); i++){
+                if(friendIds.get(i).equals(friend.getId()))
+                    friendIds.remove(i);
+            }
         }
     }
 
