@@ -3,6 +3,7 @@ package com.example.achivements;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;
@@ -41,7 +42,6 @@ public static MainActivity mainActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         System.out.println("START MAINACTIVITY");
 
         Bundle args = getIntent().getExtras();
@@ -78,6 +78,8 @@ public static MainActivity mainActivity;
         /////////////////////////////////////
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        ServerEmulator.initDB(getBaseContext());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         BottomNV = navView;

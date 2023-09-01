@@ -4,11 +4,12 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.example.achivements.MainActivity;
 import com.example.achivements.models.Achivement;
 import com.example.achivements.models.Comment;
-import com.example.achivements.models.ServerUser;
 import com.example.achivements.models.User;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class AchivementServerImitation implements IAchivementServer{
+    private SQLiteDatabase db;
     private User user;
     private HashMap<Integer, User> users = new HashMap<>();
     private HashMap<Integer, String> passwords = new HashMap<>();
@@ -63,84 +65,9 @@ public class AchivementServerImitation implements IAchivementServer{
         System.out.println(users.size());
     }
 
-    public void Destructor(){
-        Gson gson = new Gson();
-        SharedPreferences sharedPreferences = MainActivity.mainActivity.getSharedPreferences("serverSettings", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("users", gson.toJson(users));
-        editor.putString("passwords", gson.toJson(passwords));
-        editor.putString("accessCodes", gson.toJson(accessCodes));
-        editor.putString("test", "debil");
-        editor.apply();
-    }
-    public HashMap<Integer, User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(HashMap<Integer, User> users) {
-        this.users = users;
-    }
-
-    public HashMap<Integer, String> getPasswords() {
-        return passwords;
-    }
-
-    public void setPasswords(HashMap<Integer, String> passwords) {
-        this.passwords = passwords;
-    }
-
-    public HashMap<Integer, ArrayList<String>> getAccessCodes() {
-        return accessCodes;
-    }
-
-    public void setAccessCodes(HashMap<Integer, ArrayList<String>> accessCodes) {
-        this.accessCodes = accessCodes;
-    }
-
-    @Override
-    public User GetUserInfo(String login, String accessToken) {
-        for (User _user : users.values()) {
-            if(accessCodes.get(_user.getId()) != null){
-                if (_user.getLogin().equals(login) && accessCodes.get(_user.getId()).contains(accessToken)) {
-                    return _user;
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public boolean IsExistUser() {
-        return false;
-    }
-
-    @Override
-    public boolean IsExistUser(String login, String password) {
-        return false;
-    }
-
-    @Override
-    public String CreateUser(String login, String password) {
-        User user = new User(login);
-        if(findUser(user.getLogin()) == null) {
-            users.put(user.getId(), user);
-            passwords.put(user.getId(), password);
-            String accessToken = GetAccessCode(login, password);
-            return accessToken;
-        }
-        return null;
-    }
-
-    private User findUser(String login){
-        for (User user : users.values()) {
-            if(user.getLogin().equals(login))
-                return user;
-        }
-        return null;
-    }
-
-    @Override
-    public Achivement GetNewAchivement() {
+    public void initDB(Context context){
+        db = context.openOrCreateDatabase("app.db", Context.MODE_PRIVATE, null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS tasks (name TEXT)");
         String[] activities = {
                 "Познакомьтесь с новым человеком и узнайте о его увлечениях.",
                 "Устройте мероприятие с друзьями и позовите их всех.",
@@ -243,7 +170,102 @@ public class AchivementServerImitation implements IAchivementServer{
                 "Проведите день, помогая организации, занимающейся защитой прав животных.",
                 "Пойдите на местный фестиваль"
         };
-        return new Achivement(activities[(int) (Math.random()*activities.length)], Achivement.Status.ACTIVE);
+        for (String task : activities) {
+            String insertQuery = "INSERT INTO tasks (name) VALUES ('" + task + "');";
+            db.execSQL(insertQuery);
+        }
+    }
+
+    public void Destructor(){
+        Gson gson = new Gson();
+        SharedPreferences sharedPreferences = MainActivity.mainActivity.getSharedPreferences("serverSettings", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("users", gson.toJson(users));
+        editor.putString("passwords", gson.toJson(passwords));
+        editor.putString("accessCodes", gson.toJson(accessCodes));
+        editor.putString("test", "debil");
+        editor.apply();
+    }
+    public HashMap<Integer, User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(HashMap<Integer, User> users) {
+        this.users = users;
+    }
+
+    public HashMap<Integer, String> getPasswords() {
+        return passwords;
+    }
+
+    public void setPasswords(HashMap<Integer, String> passwords) {
+        this.passwords = passwords;
+    }
+
+    public HashMap<Integer, ArrayList<String>> getAccessCodes() {
+        return accessCodes;
+    }
+
+    public void setAccessCodes(HashMap<Integer, ArrayList<String>> accessCodes) {
+        this.accessCodes = accessCodes;
+    }
+
+    @Override
+    public User GetUserInfo(String login, String accessToken) {
+        for (User _user : users.values()) {
+            if(accessCodes.get(_user.getId()) != null){
+                if (_user.getLogin().equals(login) && accessCodes.get(_user.getId()).contains(accessToken)) {
+                    return _user;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean IsExistUser() {
+        return false;
+    }
+
+    @Override
+    public boolean IsExistUser(String login, String password) {
+        return false;
+    }
+
+    @Override
+    public String CreateUser(String login, String password) {
+        User user = new User(login);
+        if(findUser(user.getLogin()) == null) {
+            users.put(user.getId(), user);
+            passwords.put(user.getId(), password);
+            String accessToken = GetAccessCode(login, password);
+            return accessToken;
+        }
+        return null;
+    }
+
+    private User findUser(String login){
+        for (User user : users.values()) {
+            if(user.getLogin().equals(login))
+                return user;
+        }
+        return null;
+    }
+
+    @Override
+    public Achivement GetNewAchivement() {
+        String selectQuery = "SELECT * FROM tasks;";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        ArrayList<String> tasks = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                tasks.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return new Achivement(tasks.get((int)(Math.random()*tasks.size())), Achivement.Status.ACTIVE);
     }
 
     @Override

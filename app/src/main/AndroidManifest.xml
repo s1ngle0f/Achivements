@@ -19,9 +19,6 @@
             android:name=".SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".RegistrateActivity"
-            android:exported="false" />
-        <activity
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
