@@ -20,6 +20,10 @@ import com.example.achivements.R;
 import com.example.achivements.adapters.AchivementAdapter;
 import com.example.achivements.adapters.FriendAdapter;
 import com.example.achivements.databinding.FragmentHomeBinding;
+import com.example.achivements.models.Achivement;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class HomeFragment extends Fragment {
 
@@ -53,7 +57,9 @@ private FragmentHomeBinding binding;
 
                 AchivementAdapter achivementAdapter = new AchivementAdapter();
                 //        achivementAdapter.Add(new Achivement("TODO Something", "Complete", 1234));
-                achivementAdapter.Add(MainActivity.user.getAchivements());
+                ArrayList<Achivement> reversedList = new ArrayList<>(MainActivity.user.getAchivements());
+                Collections.reverse(reversedList);
+                achivementAdapter.Add(reversedList);
                 achivementsRV.setAdapter(achivementAdapter);
                 //!Ачивки
                 TextView homeActiveAchivement = root.findViewById(R.id.home_active_task);

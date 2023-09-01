@@ -29,7 +29,10 @@
                 android:id="@+id/comment_avatar_image"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:background="#000" />
+                android:background="#F9FAFC"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:src="@drawable/empty_avatar" />
         </androidx.cardview.widget.CardView>
 
         <LinearLayout
