@@ -23,6 +23,7 @@ import com.example.achivements.R;
 import com.example.achivements.adapters.CommentAdapter;
 import com.example.achivements.models.Achivement;
 import com.example.achivements.models.Comment;
+import com.example.achivements.models.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
@@ -143,7 +144,11 @@ public class AchivementFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         achivement.setStatus(Achivement.Status.FAILED);
-                        MainActivity.ServerEmulator.EditUser(achivement.getUser());
+                        User _user = achivement.getUser();
+                        Achivement newAchivement = MainActivity.ServerEmulator.GetNewAchivement();
+                        newAchivement.setUser(_user);
+                        _user.AddAchivement(newAchivement);
+                        MainActivity.ServerEmulator.EditUser(_user);
                     }
                 });
                 acceptButton.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +181,11 @@ public class AchivementFragment extends Fragment {
                                 // Update user's avatarImage and set the ImageView
                                 achivement.setImage(imageName);
                                 achivement.setStatus(Achivement.Status.COMPLETED);
-                                MainActivity.ServerEmulator.EditUser(achivement.getUser());
+                                User _user = achivement.getUser();
+                                Achivement newAchivement = MainActivity.ServerEmulator.GetNewAchivement();
+                                newAchivement.setUser(_user);
+                                _user.AddAchivement(newAchivement);
+                                MainActivity.ServerEmulator.EditUser(_user);
                             } catch (FileNotFoundException e) {
                                 throw new RuntimeException(e);
                             } catch (IOException e) {

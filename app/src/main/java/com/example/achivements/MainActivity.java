@@ -58,6 +58,14 @@ public static MainActivity mainActivity;
 
         if(user == null)
             user = ServerEmulator.GetUserInfo(sharedPreferences.getString("login", ""), sharedPreferences.getString("accessToken", ""));
+        else
+            if(user.GetActiveAchivement().getStatus() != Achivement.Status.ACTIVE)
+            {
+                Achivement newAchivement = MainActivity.ServerEmulator.GetNewAchivement();
+                newAchivement.setUser(user);
+                user.AddAchivement(newAchivement);
+                MainActivity.ServerEmulator.EditUser(user);
+            }
         System.out.println(sharedPreferences.getString("login", "") + " " + sharedPreferences.getString("accessToken", ""));
         System.out.println(user);
         System.out.println(ServerSharedPreferences.getString("test", "not test"));
