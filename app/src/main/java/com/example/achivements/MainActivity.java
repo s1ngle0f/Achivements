@@ -79,7 +79,12 @@ public static MainActivity mainActivity;
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        ServerEmulator.initDB(getBaseContext());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ServerEmulator.initDB(MainActivity.this.getBaseContext());
+            }
+        }).start();
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         BottomNV = navView;

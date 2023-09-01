@@ -64,7 +64,7 @@ public class AchivementServerImitation implements IAchivementServer{
         }
         System.out.println(users.size());
     }
-
+    static boolean isFirstLaunch = true;
     public void initDB(Context context){
         db = context.openOrCreateDatabase("app.db", Context.MODE_PRIVATE, null);
         db.execSQL("CREATE TABLE IF NOT EXISTS tasks (name TEXT)");
@@ -170,9 +170,12 @@ public class AchivementServerImitation implements IAchivementServer{
                 "Проведите день, помогая организации, занимающейся защитой прав животных.",
                 "Пойдите на местный фестиваль"
         };
-        for (String task : activities) {
-            String insertQuery = "INSERT INTO tasks (name) VALUES ('" + task + "');";
-            db.execSQL(insertQuery);
+        if(isFirstLaunch) {
+            for (String task : activities) {
+                String insertQuery = "INSERT INTO tasks (name) VALUES ('" + task + "');";
+                db.execSQL(insertQuery);
+            }
+            isFirstLaunch = false;
         }
     }
 
