@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 
 import com.example.achivements.MainActivity;
 import com.example.achivements.models.Achivement;
+import com.example.achivements.models.Comment;
 import com.example.achivements.models.ServerUser;
 import com.example.achivements.models.User;
 import com.google.gson.Gson;
@@ -53,8 +54,8 @@ public class AchivementServerImitation implements IAchivementServer{
             accessCodes.clear();
             for(int i = 10; i < 30; i++){
                 User _user = new User("u" + i, null, "any_description" + i);
-                _user.AddAchivement(new Achivement("TODO Something any man" + i, "Complete", _user));
-                _user.AddAchivement(new Achivement("TODO Something any man" + i, "InProgress", _user));
+                _user.AddAchivement(new Achivement("TODO Something any man" + i, Achivement.Status.COMPLETED, _user));
+                _user.AddAchivement(new Achivement("TODO Something any man" + i, Achivement.Status.ACTIVE, _user).AddComment(new Comment(_user.getId(), "Some comment")));
                 users.put(_user.getId(), _user);
                 passwords.put(_user.getId(), "123");
             }
@@ -201,6 +202,10 @@ public class AchivementServerImitation implements IAchivementServer{
                 _users.add(users.get(id));
         }
         return _users;
+    }
+
+    public User GetUser(int id) {
+        return users.get(id);
     }
 
     @Override

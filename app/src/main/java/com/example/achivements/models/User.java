@@ -79,12 +79,14 @@ public class User implements Serializable {
 
     public void ResetFriends(){
         ArrayList<User> _friends = MainActivity.ServerEmulator.GetUsers(friendIds);
-        friends.clear();
-        AddFriend(_friends);
+        ResetFriends(_friends);
     }
 
     public void ResetFriends(ArrayList<User> _friends){
         friends.clear();
+        for (Achivement achivement : achivements) {
+            achivement.setUser(this);
+        }
         AddFriend(_friends);
     }
 

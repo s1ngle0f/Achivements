@@ -3,38 +3,65 @@ package com.example.achivements.models;
 import android.net.Uri;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Achivement implements Serializable {
+
+    public enum Status{
+        ACTIVE,
+        COMPLETED,
+        FAILED
+    }
+
     private int count = 0;
     private int id;
     private String text;
-    private String status;
+    private Status status = Status.ACTIVE;
     private Uri image;
+    private ArrayList<Comment> comments = new ArrayList<>();
     private transient User user;
 
     public Achivement () {}
 
-    public Achivement(int id, String text, String status, User user) {
+
+    public Achivement(int id, String text, Status status, Uri image, ArrayList<Comment> comments, User user) {
+        this.id = id;
+        this.text = text;
+        this.status = status;
+        this.image = image;
+        this.comments = comments;
+        this.user = user;
+    }
+
+    public Achivement(String text, Status status, Uri image, ArrayList<Comment> comments, User user) {
+        this.text = text;
+        this.status = status;
+        this.image = image;
+        this.comments = comments;
+        this.user = user;
+    }
+
+    public Achivement(int id, String text, Status status, User user) {
         this.id = id;
         this.text = text;
         this.status = status;
         this.user = user;
     }
 
-    public Achivement(String text, String status, User user) {
+    public Achivement(String text, Status status, User user) {
         this.id = count++;
         this.text = text;
         this.status = status;
         this.user = user;
     }
 
-    public Achivement(int id, String text, String status) {
+    public Achivement(int id, String text, Status status) {
         this.id = id;
         this.text = text;
         this.status = status;
     }
 
-    public Achivement(String text, String status) {
+    public Achivement(String text, Status status) {
         this.id = count++;
         this.text = text;
         this.status = status;
@@ -64,11 +91,24 @@ public class Achivement implements Serializable {
         this.text = text;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public String getStatusText() {
+        switch (status){
+            case ACTIVE:
+                return "Active";
+            case COMPLETED:
+                return "Completed";
+            case FAILED:
+                return "Failed";
+            default:
+                return "Not stated";
+        }
+    }
+
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -78,6 +118,19 @@ public class Achivement implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Achivement AddComment(Comment comment){
+        comments.add(comment);
+        return this;
+    }
+
+    public ArrayList<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(ArrayList<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override

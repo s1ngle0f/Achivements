@@ -130,7 +130,7 @@ public class AccountFragment extends Fragment {
         if(user != null) {
             accountLogin.setText(user.getLogin());
             accountDescription.setText(user.getDescription());
-            if(MainActivity.user.getFriends() != null && MainActivity.user.getFriends().contains(user))
+            if(MainActivity.user != null && MainActivity.user.getFriends() != null && MainActivity.user.getFriends().contains(user))
                 root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
             if(user.getAchivements() != null){
                 AchivementAdapter achivementAdapter = new AchivementAdapter();

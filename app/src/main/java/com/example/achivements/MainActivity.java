@@ -120,17 +120,17 @@ public static MainActivity mainActivity;
         ArrayList<User> friends = new ArrayList<>();
         for(int i = 0; i < 10; i++){
             User _friend = new User("friend_login"+i, "friend_password"+i, "friend_description"+i);
-            _friend.AddAchivement(new Achivement("TODO Something friend" + i, "Complete", _friend));
-            _friend.AddAchivement(new Achivement("TODO Something friend" + i, "Complete", _friend));
-            _friend.AddAchivement(new Achivement("TODO Something friend" + i, "In progress", _friend));
+            _friend.AddAchivement(new Achivement("TODO Something friend" + i, Achivement.Status.COMPLETED, _friend));
+            _friend.AddAchivement(new Achivement("TODO Something friend" + i, Achivement.Status.FAILED, _friend));
+            _friend.AddAchivement(new Achivement("TODO Something friend" + i, Achivement.Status.ACTIVE, _friend));
             friends.add(_friend);
         }
         //!Создание друзей
         ArrayList<Achivement> achivements = new ArrayList<>();
-        achivements.add(new Achivement("TODO MYSELF1", "Complete", _user));
-        achivements.add(new Achivement("TODO MYSELF2", "Complete", _user));
-        achivements.add(new Achivement("TODO MYSELF3", "Complete", _user));
-        achivements.add(new Achivement("TODO MYSELF4", "In progress", _user));
+        achivements.add(new Achivement("TODO MYSELF1", Achivement.Status.COMPLETED, _user));
+        achivements.add(new Achivement("TODO MYSELF2", Achivement.Status.COMPLETED, _user));
+        achivements.add(new Achivement("TODO MYSELF3", Achivement.Status.FAILED, _user));
+        achivements.add(new Achivement("TODO MYSELF4", Achivement.Status.ACTIVE, _user));
 
         _user.setAchivements(achivements);
         _user.setFriends(friends);

@@ -26,7 +26,9 @@
                 android:layout_height="75dp"
                 android:background="#000"
                 android:clickable="true"
-                app:carbon_cornerRadius="37dp" />
+                app:carbon_cornerRadius="37dp"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"/>
 
             <TextView
                 android:id="@+id/edit_account_login"

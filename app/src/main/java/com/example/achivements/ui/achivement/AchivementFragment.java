@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +15,12 @@ import android.widget.TextView;
 
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
+import com.example.achivements.adapters.CommentAdapter;
 import com.example.achivements.models.Achivement;
+import com.example.achivements.models.Comment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import carbon.widget.ImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,16 +72,44 @@ public class AchivementFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_achivement, container, false);
+        View root = inflater.inflate(R.layout.fragment_achivement, container, false);
+
+        Bundle args = getArguments();
+        Achivement achivement = (Achivement) args.getSerializable("achivement");
+        TextView achivementText = root.findViewById(R.id.achivement_text);
+        TextView achivementLogin = root.findViewById(R.id.achivement_login);
+        TextView achivementStatus = root.findViewById(R.id.achivement_status);
+        TextView achivementInputField = root.findViewById(R.id.achivement_inputfield_comment);
+        ImageView achivementsSender = root.findViewById(R.id.achivement_send_button);
+        RecyclerView achivementCommentRV = root.findViewById(R.id.achivement_comment_rv);
+
+        achivementCommentRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+        CommentAdapter commentAdapter = new CommentAdapter();
+        commentAdapter.Add(achivement.getComments());
+
+        achivementCommentRV.setAdapter(commentAdapter);
+
+        if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.GONE);
+        if(MainActivity.user == null) root.findViewById(R.id.achivement_input_comment).setVisibility(View.GONE);
+        achivementText.setText(achivement.getText());
+        achivementLogin.setText(achivement.getUser().getLogin());
+        achivementStatus.setText("Achivement: " + achivement.getStatusText());
+
+        achivementsSender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Comment newComment = new Comment(MainActivity.user.getId(), achivementInputField.getText().toString());
+                achivement.AddComment(newComment);
+                commentAdapter.Add(newComment);
+                MainActivity.ServerEmulator.EditUser(achivement.getUser());
+            }
+        });
+
+        return root;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle args = getArguments();
-        Achivement achivement = (Achivement) args.getSerializable("achivement");
-        TextView achivementText = view.findViewById(R.id.achivement_text);
-        if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.GONE);
-        achivementText.setText(achivement.getText());
+
     }
 }
