@@ -14,6 +14,12 @@ import android.widget.TextView;
 
 import com.example.achivements.models.User;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Set;
 
 import carbon.widget.ImageView;
@@ -34,6 +40,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         descriptionField.setText(MainActivity.user.getDescription());
         editSettLogin.setText(MainActivity.user.getLogin());
+
+        String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
+        String imageName = "avatar.jpg"; // Change the image name as needed
+        File avatarImageFile = new File(projectFolderPath + imageName);
+        if(avatarImageFile.exists())
+            avatarAccount.setImageURI(Uri.fromFile(avatarImageFile));
 
         editAccountConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,8 +85,45 @@ public class SettingsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
+//                Uri selectedImageUri = data.getData();
+//                MainActivity.user.setAvatarImage(selectedImageUri);
+//                avatarAccount.setImageURI(selectedImageUri);
                 Uri selectedImageUri = data.getData();
-                avatarAccount.setImageURI(selectedImageUri);
+
+                try {
+                    // Copy the selected image to the project folder
+                    String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
+                    File projectFolder = new File(projectFolderPath);
+                    if (!projectFolder.exists()) {
+                        projectFolder.mkdir();
+                    }
+
+                    String imageName = "avatar.jpg"; // Change the image name as needed
+                    File avatarImageFile = new File(projectFolderPath + imageName);
+
+                    InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
+                    OutputStream outputStream = new FileOutputStream(avatarImageFile);
+
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = inputStream.read(buffer)) > 0) {
+                        outputStream.write(buffer, 0, length);
+                    }
+
+                    inputStream.close();
+                    outputStream.close();
+
+                    // Update user's avatarImage and set the ImageView
+                    MainActivity.user.setAvatarImage(avatarImageFile.getPath());
+                    avatarAccount.setImageURI(Uri.fromFile(avatarImageFile));
+
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

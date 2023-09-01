@@ -16,7 +16,8 @@ public class User implements Serializable {
     private ArrayList<Achivement> achivements = new ArrayList<>();
     private transient ArrayList<User> friends = new ArrayList<>();
     private ArrayList<Integer> friendIds = new ArrayList<>();
-    private Uri avatarImage;
+
+    private String avatarImage;
     public User(int id, String login, String accessToken, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
         this.id = id;
         this.login = login;
@@ -126,11 +127,11 @@ public class User implements Serializable {
         }
     }
 
-    public Uri getAvatarImage() {
+    public String getAvatarImage() {
         return avatarImage;
     }
 
-    public void setAvatarImage(Uri avatarImage) {
+    public void setAvatarImage(String avatarImage) {
         this.avatarImage = avatarImage;
     }
 
