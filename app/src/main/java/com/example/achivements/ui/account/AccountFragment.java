@@ -1,6 +1,7 @@
 package com.example.achivements.ui.account;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.achivements.LoginActivity;
@@ -22,7 +24,12 @@ import com.example.achivements.SettingsActivity;
 import com.example.achivements.adapters.AchivementAdapter;
 import com.example.achivements.databinding.FragmentAccountBinding;
 import com.example.achivements.databinding.FragmentHomeBinding;
+import com.example.achivements.models.Achivement;
 import com.example.achivements.models.User;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -81,6 +88,7 @@ public class AccountFragment extends Fragment {
         TextView accountLogin = root.findViewById(R.id.account_login);
         TextView accountDescription = root.findViewById(R.id.account_descripton);
         ImageButton settingsButton = root.findViewById(R.id.account_settings_button);
+        ImageView avatar = root.findViewById(R.id.account_avatar);
         Button subscribeButton = root.findViewById(R.id.account_subscribe_button);
         RecyclerView accountLastAchivementsRV = root.findViewById(R.id.account_achivement_rv);
         accountLastAchivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
@@ -97,6 +105,11 @@ public class AccountFragment extends Fragment {
             if (args.getBoolean("isSelfAccount", true)) {
                 root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
                 user = MainActivity.user;
+                String projectFolderPath = MainActivity.mainActivity.getApplicationContext().getFilesDir() + "/project/";
+                String imageName = "avatar.jpg"; // Change the image name as needed
+                File avatarImageFile = new File(projectFolderPath + imageName);
+                if(avatarImageFile.exists())
+                    avatar.setImageURI(Uri.fromFile(avatarImageFile));
                 System.out.println("ISSELF ACC " + user);
             }
             else{
@@ -112,6 +125,11 @@ public class AccountFragment extends Fragment {
         else {
             root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
             user = MainActivity.user;
+            String projectFolderPath = MainActivity.mainActivity.getApplicationContext().getFilesDir() + "/project/";
+            String imageName = "avatar.jpg"; // Change the image name as needed
+            File avatarImageFile = new File(projectFolderPath + imageName);
+            if(avatarImageFile.exists())
+                avatar.setImageURI(Uri.fromFile(avatarImageFile));
             System.out.println("ACC " + user);
         }
         if(user != null) {
@@ -142,7 +160,9 @@ public class AccountFragment extends Fragment {
             });
             if(user.getAchivements() != null){
                 AchivementAdapter achivementAdapter = new AchivementAdapter();
-                achivementAdapter.Add(user.getAchivements());
+                ArrayList<Achivement> reversedList = new ArrayList<>(user.getAchivements());
+                Collections.reverse(reversedList);
+                achivementAdapter.Add(reversedList);
                 accountLastAchivementsRV.setAdapter(achivementAdapter);
             }
         }else{

@@ -1,5 +1,6 @@
 package com.example.achivements.adapters;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.achivements.MainActivity;
 import com.example.achivements.R;
 import com.example.achivements.databinding.AchivementItemBinding;
 import com.example.achivements.models.Achivement;
@@ -45,6 +47,22 @@ public class AchivementAdapter extends RecyclerView.Adapter<AchivementAdapter.Ac
 
         public void bind(Achivement achivement){
             achivementItemBinding.achivementText.setText(achivement.getText());
+            switch (achivement.getStatus()){
+                case ACTIVE:
+                    Uri imageUri = Uri.parse("android.resource://" + MainActivity.mainActivity.getPackageName() + "/" + R.drawable.active);
+                    achivementItemBinding.avatarImage.setImageURI(imageUri);
+                    break;
+                case COMPLETED:
+                    imageUri = Uri.parse("android.resource://" + MainActivity.mainActivity.getPackageName() + "/" + R.drawable.completed);
+                    achivementItemBinding.avatarImage.setImageURI(imageUri);
+                    break;
+                case FAILED:
+                    imageUri = Uri.parse("android.resource://" + MainActivity.mainActivity.getPackageName() + "/" + R.drawable.failed);
+                    achivementItemBinding.avatarImage.setImageURI(imageUri);
+                    break;
+                default:
+                    break;
+            }
             achivementItemBinding.achivementItemCV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
