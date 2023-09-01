@@ -20,9 +20,10 @@
             <carbon.widget.ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                app:carbon_cornerRadius="15dp"
+                android:scaleType="centerCrop"
                 android:layout_marginTop="3dp"
-                android:background="#000"/>
+                android:background="#0000"
+                android:src="@drawable/search"/>
             <EditText
                 android:id="@+id/search_friend_search_field"
                 android:layout_width="match_parent"

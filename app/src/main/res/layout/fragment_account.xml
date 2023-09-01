@@ -108,7 +108,9 @@
         android:id="@+id/account_settings_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="#FFFFFF"
+        android:src="@drawable/settings"
+        android:background="#0000"
+        android:scaleType="centerCrop"
         android:layout_gravity="top|end"
         android:layout_margin="5dp"/>
 </FrameLayout>

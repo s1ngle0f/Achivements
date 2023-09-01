@@ -27,7 +27,7 @@
                 android:background="#000"
                 android:clickable="true"
                 app:carbon_cornerRadius="37dp"
-                android:scaleType="fitCenter"
+                android:scaleType="centerCrop"
                 android:adjustViewBounds="true"/>
 
             <TextView
