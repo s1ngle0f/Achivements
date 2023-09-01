@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_achivementFragment_to_accountFragment"
             app:destination="@id/accountFragment" />
+        <action
+            android:id="@+id/action_achivementFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
     </fragment>
     <fragment
         android:id="@+id/accountFragment"

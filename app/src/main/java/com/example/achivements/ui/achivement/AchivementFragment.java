@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -149,6 +150,7 @@ public class AchivementFragment extends Fragment {
                         newAchivement.setUser(_user);
                         _user.AddAchivement(newAchivement);
                         MainActivity.ServerEmulator.EditUser(_user);
+                        Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
                     }
                 });
                 acceptButton.setOnClickListener(new View.OnClickListener() {
@@ -186,6 +188,7 @@ public class AchivementFragment extends Fragment {
                                 newAchivement.setUser(_user);
                                 _user.AddAchivement(newAchivement);
                                 MainActivity.ServerEmulator.EditUser(_user);
+                                Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
                             } catch (FileNotFoundException e) {
                                 throw new RuntimeException(e);
                             } catch (IOException e) {
