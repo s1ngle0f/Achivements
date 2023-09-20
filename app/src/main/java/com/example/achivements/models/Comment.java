@@ -1,22 +1,26 @@
 package com.example.achivements.models;
 
-import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public class Comment implements Serializable {
-    private int userId;
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class Comment {
+    private int id = 0;
     private String text;
+    private User user;
+    private Achivement achivement;
 
-    public Comment(int userId, String text) {
-        this.userId = userId;
-        this.text = text;
+    public int getId() {
+        return id;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getText() {
@@ -25,5 +29,21 @@ public class Comment implements Serializable {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Achivement getAchivement() {
+        return achivement;
+    }
+
+    public void setAchivement(Achivement achivement) {
+        this.achivement = achivement;
     }
 }

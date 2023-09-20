@@ -39,7 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
         Button editAccountExit= findViewById(R.id.edit_account_exit);
 
         descriptionField.setText(MainActivity.user.getDescription());
-        editSettLogin.setText(MainActivity.user.getLogin());
+        editSettLogin.setText(MainActivity.user.getUsername());
 
         String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
         String imageName = "avatar.jpg"; // Change the image name as needed

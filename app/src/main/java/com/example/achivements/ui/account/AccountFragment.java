@@ -133,7 +133,7 @@ public class AccountFragment extends Fragment {
             System.out.println("ACC " + user);
         }
         if(user != null) {
-            accountLogin.setText(user.getLogin());
+            accountLogin.setText(user.getUsername());
             accountDescription.setText(user.getDescription());
             if(MainActivity.user != null && MainActivity.user.getFriends() != null && MainActivity.user.getFriends().contains(user)){
                 subscribeButton.setText("Отписаться");
@@ -148,10 +148,10 @@ public class AccountFragment extends Fragment {
                     }else{
                         if(MainActivity.user.getFriends().contains(finalUser)){
                             subscribeButton.setText("Отписаться");
-                            MainActivity.user.DeleteFriend(finalUser);
+                            MainActivity.user.removeFriend(finalUser);
                         }else{
                             subscribeButton.setText("Подписаться");
-                            MainActivity.user.AddFriend(finalUser);
+                            MainActivity.user.addFriend(finalUser);
                         }
 
                         MainActivity.ServerEmulator.EditUser(MainActivity.user);

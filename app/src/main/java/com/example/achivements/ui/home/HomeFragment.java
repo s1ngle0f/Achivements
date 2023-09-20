@@ -21,6 +21,7 @@ import com.example.achivements.adapters.AchivementAdapter;
 import com.example.achivements.adapters.FriendAdapter;
 import com.example.achivements.databinding.FragmentHomeBinding;
 import com.example.achivements.models.Achivement;
+import com.example.achivements.models.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +46,7 @@ private FragmentHomeBinding binding;
                 FriendAdapter friendAdapter = new FriendAdapter();
 
                 System.out.println("Friends: " + MainActivity.user.getFriends());
-                friendAdapter.Add(MainActivity.user.getFriends());
+                friendAdapter.Add((ArrayList<User>) MainActivity.user.getFriends());
 
                 friendsRV.setAdapter(friendAdapter);
             }

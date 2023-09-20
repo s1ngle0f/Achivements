@@ -1,143 +1,37 @@
 package com.example.achivements.models;
 
-import android.net.Uri;
+import lombok.*;
 
-import androidx.annotation.NonNull;
-
-import com.example.achivements.MainActivity;
-
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class User implements Serializable {
-    private static int count = 0;
-    private int id;
-    private String login, accessToken, description;
-    private ArrayList<Achivement> achivements = new ArrayList<>();
-    private transient ArrayList<User> friends = new ArrayList<>();
-    private ArrayList<Integer> friendIds = new ArrayList<>();
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+public class User {
+    private int id = 0;
+    private String username;
+    private String password;
+    private String description;
 
-    private String avatarImage;
-    public User(int id, String login, String accessToken, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
-        this.id = id;
-        this.login = login;
-        this.accessToken = accessToken;
-        this.description = description;
-        this.achivements = achivements;
-        this.friends = friends;
+    private boolean active = true;
+
+    private List<Achivement> achivements = new ArrayList<>();
+
+    private Set<User> friends = new HashSet<>();
+    private Set<Role> roles = new HashSet<>();
+
+    public void addFriend(User user){
+        if (!friends.stream().anyMatch(friend -> user.getId() == friend.getId()))
+            friends.add(user);
     }
 
-    public User(String login, String accessToken, String description, ArrayList<Achivement> achivements, ArrayList<User> friends) {
-        this.id = count++;
-        this.login = login;
-        this.accessToken = accessToken;
-        this.description = description;
-        this.achivements = achivements;
-        this.friends = friends;
-    }
-
-    public User(String login, String accessToken, String description, ArrayList<Achivement> achivements) {
-        this.id = count++;
-        this.login = login;
-        this.accessToken = accessToken;
-        this.description = description;
-        this.achivements = achivements;
-    }
-
-    public User(int id, String login, String accessToken, String description) {
-        this.id = id;
-        this.login = login;
-        this.accessToken = accessToken;
-        this.description = description;
-    }
-
-    public User(String login, String accessToken, String description) {
-        this.id = count++;
-        this.login = login;
-        this.accessToken = accessToken;
-        this.description = description;
-    }
-
-    public User(String login) {
-        this.id = count++;
-        this.login = login;
-    }
-
-    public User(int id) {
-        this.id = id;
-    }
-
-    public User(){
-        this.id = count++;
-    }
-
-    public Achivement GetActiveAchivement(){
-        if(achivements.size() > 0)
-            return achivements.get(achivements.size()-1);
-        return null;
-    }
-
-    public void ResetFriends(){
-        ArrayList<User> _friends = MainActivity.ServerEmulator.GetUsers(friendIds);
-        ResetFriends(_friends);
-    }
-
-    public void ResetFriends(ArrayList<User> _friends){
-        friends.clear();
-        for (Achivement achivement : achivements) {
-            achivement.setUser(this);
-        }
-        AddFriend(_friends);
-    }
-
-    public void AddAchivement(Achivement achivement){
-        achivements.add(achivement);
-    }
-
-    public void AddAchivement(ArrayList<Achivement> achivements){
-        for (Achivement achivement : achivements) {
-            this.achivements.add(achivement);
-        }
-    }
-
-    public void AddFriend(User friend){
-        if(!friends.contains(friend)){
-            friends.add(friend);
-            friendIds.add(friend.getId());
-        }
-    }
-
-    public void AddFriend(ArrayList<User> friends){
-        for (User friend : friends) {
-            if(!this.friends.contains(friend)){
-                this.friends.add(friend);
-                friendIds.add(friend.getId());
-            }
-        }
-    }
-
-    public void DeleteFriend(User friend){
-        if(this.friends.contains(friend)){
-            friends.remove(friend);
-            for(int i = 0; i < friendIds.size(); i++){
-                if(friendIds.get(i).equals(friend.getId()))
-                    friendIds.remove(i);
-            }
-        }
-    }
-
-    public void SetUserForAchivements(){
-        for (Achivement achivement : achivements) {
-            achivement.setUser(this);
-        }
-    }
-
-    public String getAvatarImage() {
-        return avatarImage;
-    }
-
-    public void setAvatarImage(String avatarImage) {
-        this.avatarImage = avatarImage;
+    public void removeFriend(User user){
+        friends.removeIf(friend -> user.getId() == friend.getId());
     }
 
     public int getId() {
@@ -148,20 +42,20 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getLogin() {
-        return login;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getAccessToken() {
-        return accessToken;
+    public String getPassword() {
+        return password;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getDescription() {
@@ -172,57 +66,35 @@ public class User implements Serializable {
         this.description = description;
     }
 
-    public ArrayList<Integer> getFriendIds() {
-        return friendIds;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setFriendIds(ArrayList<Integer> friendIds) {
-        this.friendIds = friendIds;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
-    public void setAchivements(ArrayList<Achivement> achivements) {
-        this.achivements = achivements;
-    }
-
-    public void setFriends(ArrayList<User> friends) {
-        this.friends = friends;
-        friendIds.clear();
-        for (User friend : friends) {
-            friendIds.add(friend.getId());
-        }
-    }
-
-    public ArrayList<Achivement> getAchivements() {
+    public List<Achivement> getAchivements() {
         return achivements;
     }
 
-    public ArrayList<User> getFriends() {
+    public void setAchivements(List<Achivement> achivements) {
+        this.achivements = achivements;
+    }
+
+    public Set<User> getFriends() {
         return friends;
     }
 
-    @NonNull
-    @Override
-    public User clone() {
-        ArrayList<Achivement> _achivements = new ArrayList<>();
-        ArrayList<User> _friends = new ArrayList<>();
-        for (User user : friends) {
-            _friends.add(user);
-        }
-        for (Achivement achivement : achivements) {
-            _achivements.add(achivement);
-        }
-        User user = new User(login, accessToken, description, _achivements, _friends);
-        return user;
+    public void setFriends(Set<User> friends) {
+        this.friends = friends;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", login='" + login + '\'' +
-                ", accessToken='" + accessToken + '\'' +
-                ", description='" + description + '\'' +
-                ", achivements=" + achivements +
-                '}';
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }
