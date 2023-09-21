@@ -7,11 +7,13 @@ import androidx.navigation.Navigation;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.achivements.api.ServerApi;
 import com.example.achivements.models.User;
 
 import java.io.File;
@@ -41,17 +43,24 @@ public class SettingsActivity extends AppCompatActivity {
         descriptionField.setText(MainActivity.user.getDescription());
         editSettLogin.setText(MainActivity.user.getUsername());
 
-        String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
-        String imageName = "avatar.jpg"; // Change the image name as needed
-        File avatarImageFile = new File(projectFolderPath + imageName);
-        if(avatarImageFile.exists())
-            avatarAccount.setImageURI(Uri.fromFile(avatarImageFile));
+        byte[] photoBytes = MainActivity.serverApi.getAvatar();
+        if(photoBytes != null){
+            String base64Photo = Base64.encodeToString(photoBytes, Base64.DEFAULT); // Преобразуйте в Base64 строку
+            Uri photoUri = Uri.parse("data:image/jpeg;base64," + base64Photo);
+            avatarAccount.setImageURI(photoUri);
+        }
+
+//        String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
+//        String imageName = "avatar.jpg";
+//        File avatarImageFile = new File(projectFolderPath + imageName);
+//        if(avatarImageFile.exists())
+//            avatarAccount.setImageURI(Uri.fromFile(avatarImageFile));
 
         editAccountConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MainActivity.user.setDescription(descriptionField.getText().toString());
-                MainActivity.ServerEmulator.EditUser(MainActivity.user);
+                MainActivity.serverApi.editUser(MainActivity.user);
                 Intent myIntent = new Intent(SettingsActivity.this, MainActivity.class);
                 startActivity(myIntent);
             }
@@ -63,6 +72,7 @@ public class SettingsActivity extends AppCompatActivity {
                 MainActivity.editor.clear();
                 MainActivity.editor.apply();
                 MainActivity.user = null;
+                ServerApi.setJwt(null);
                 Intent myIntent = new Intent(SettingsActivity.this, MainActivity.class);
                 startActivity(myIntent);
             }
@@ -85,9 +95,6 @@ public class SettingsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
-//                Uri selectedImageUri = data.getData();
-//                MainActivity.user.setAvatarImage(selectedImageUri);
-//                avatarAccount.setImageURI(selectedImageUri);
                 Uri selectedImageUri = data.getData();
 
                 try {
@@ -98,31 +105,30 @@ public class SettingsActivity extends AppCompatActivity {
                         projectFolder.mkdir();
                     }
 
-                    String imageName = "avatar.jpg"; // Change the image name as needed
+                    String imageName = "avatar.jpg";
                     File avatarImageFile = new File(projectFolderPath + imageName);
 
                     InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
-                    OutputStream outputStream = new FileOutputStream(avatarImageFile);
-
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = inputStream.read(buffer)) > 0) {
-                        outputStream.write(buffer, 0, length);
-                    }
+//                    OutputStream outputStream = new FileOutputStream(avatarImageFile);
+//
+//                    byte[] buffer = new byte[1024];
+//                    int length;
+//                    while ((length = inputStream.read(buffer)) > 0) {
+//                        outputStream.write(buffer, 0, length);
+//                    }
 
                     inputStream.close();
-                    outputStream.close();
+//                    outputStream.close();
 
                     // Update user's avatarImage and set the ImageView
-                    MainActivity.user.setAvatarImage(avatarImageFile.getPath());
+//                    MainActivity.user.setAvatarImage(avatarImageFile.getPath());
+                    MainActivity.serverApi.loadAvatar(selectedImageUri.getPath());
                     avatarAccount.setImageURI(Uri.fromFile(avatarImageFile));
 
                 } catch (FileNotFoundException e) {
                     throw new RuntimeException(e);
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
                 }
             }
         }

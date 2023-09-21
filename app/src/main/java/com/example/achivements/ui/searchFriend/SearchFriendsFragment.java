@@ -19,6 +19,9 @@ import com.example.achivements.MainActivity;
 import com.example.achivements.R;
 import com.example.achivements.adapters.FriendAdapter;
 import com.example.achivements.databinding.FragmentSearchFriendsBinding;
+import com.example.achivements.models.User;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -76,12 +79,17 @@ public class SearchFriendsFragment extends Fragment {
 
         EditText searcher = root.findViewById(R.id.search_friend_search_field);
 
-        if(MainActivity.ServerEmulator != null){//Друзья
+        if(MainActivity.serverApi != null){//Друзья
             RecyclerView friendsRV = root.findViewById(R.id.search_friend_rv);
             friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
             FriendAdapter friendAdapter = new FriendAdapter();
-            friendAdapter.Add(MainActivity.ServerEmulator.GetUsers());
+            new Thread(() -> {
+                System.out.println(MainActivity.serverApi.getUsers());
+                friendAdapter.Add((ArrayList<User>) MainActivity.serverApi.getUsers());
+            }).start();
+//            System.out.println(MainActivity.serverApi.getUsers());
+//            friendAdapter.Add((ArrayList<User>) MainActivity.serverApi.getUsers());
 
             friendsRV.setAdapter(friendAdapter);
             //!Друзья
@@ -98,7 +106,7 @@ public class SearchFriendsFragment extends Fragment {
 
                 @Override
                 public void afterTextChanged(Editable editable) {
-                    friendAdapter.Set(MainActivity.ServerEmulator.GetUsers(searcher.getText().toString()));
+                    friendAdapter.Set((ArrayList<User>) MainActivity.serverApi.getUsersByUsername(searcher.getText().toString()));
                 }
             });
         }

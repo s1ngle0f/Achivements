@@ -131,7 +131,7 @@ public class AchivementFragment extends Fragment {
                 File avatarImageFile = new File(projectFolderPath + achivement.getImage());
                 achivementImage.setImageURI(Uri.fromFile(avatarImageFile));
             }
-            if(achivement.getUser() == MainActivity.user && achivement.getStatus() == Status.ACTIVE){
+            if(MainActivity.user.getAchivements().stream().anyMatch(_achivement -> _achivement.getId() == achivement.getId()) && achivement.getStatus() == Status.ACTIVE){
                 inputComment.setVisibility(View.GONE);
                 selector.setVisibility(View.VISIBLE);
                 achivementImage.setOnClickListener(new View.OnClickListener() {
@@ -147,12 +147,7 @@ public class AchivementFragment extends Fragment {
                 cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        achivement.setStatus(Status.FAILED);
-                        User _user = achivement.getUser();
-                        Achivement newAchivement = MainActivity.ServerEmulator.GetNewAchivement();
-                        newAchivement.setUser(_user);
-                        _user.AddAchivement(newAchivement);
-                        MainActivity.ServerEmulator.EditUser(_user);
+                        MainActivity.user = MainActivity.serverApi.getNewAchivement(Status.FAILED);
                         Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
                     }
                 });
@@ -185,12 +180,7 @@ public class AchivementFragment extends Fragment {
 
                                 // Update user's avatarImage and set the ImageView
                                 achivement.setImage(imageName);
-                                achivement.setStatus(Status.COMPLETED);
-                                User _user = achivement.getUser();
-                                Achivement newAchivement = MainActivity.ServerEmulator.GetNewAchivement();
-                                newAchivement.setUser(_user);
-                                _user.AddAchivement(newAchivement);
-                                MainActivity.ServerEmulator.EditUser(_user);
+                                MainActivity.user = MainActivity.serverApi.getNewAchivement(Status.COMPLETED);
                                 Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
                             } catch (FileNotFoundException e) {
                                 throw new RuntimeException(e);
@@ -214,16 +204,16 @@ public class AchivementFragment extends Fragment {
             }
         }
         achivementText.setText(achivement.getText());
-        achivementLogin.setText(achivement.getUser().getLogin());
+        achivementLogin.setText(achivement.getUser().getUsername());
         achivementStatus.setText("Achivement: " + achivement.getStatusText());
 
         achivementsSender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Comment newComment = new Comment(MainActivity.user.getId(), achivementInputField.getText().toString());
-                achivement.AddComment(newComment);
+                Comment newComment = new Comment(MainActivity.user, achivementInputField.getText().toString());
+                achivement.addComment(newComment);
                 commentAdapter.Add(newComment);
-                MainActivity.ServerEmulator.EditUser(achivement.getUser());
+                MainActivity.serverApi.editUser(achivement.getUser());
             }
         });
 

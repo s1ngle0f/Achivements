@@ -17,6 +17,9 @@ public interface IServerApi {
     @GET("/users")
     Call<List<User>> getUsers();
 
+    @GET("/users")
+    Call<List<User>> getUsersByUsername(@Query(value = "username") String username);
+
     @GET("/user/{id}")
     Call<User> getUser(@Path(value = "id") int id);
 

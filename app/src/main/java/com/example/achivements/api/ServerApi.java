@@ -1,9 +1,14 @@
 package com.example.achivements.api;
 
+import com.example.achivements.models.Achivement;
+import com.example.achivements.models.ApiResponse;
+import com.example.achivements.models.AuthentificationRequest;
+import com.example.achivements.models.Status;
+import com.example.achivements.models.User;
+
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.*;
-import org.example.model.*;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Call;
@@ -17,9 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ServerApi {
-    private static final String BASE_URL = "http://localhost:8080";
-    @Getter
-    @Setter
+    private static final String BASE_URL = "http://192.168.0.136:8080";
     private static String jwt = "";
     OkHttpClient client;
     Retrofit retrofit;
@@ -58,28 +61,27 @@ public class ServerApi {
     }
 
     public List<User> getUsers() {
-//        Call<List<User>> callGetUsers = serverApi.getUsers();
-//        callGetUsers.enqueue(new Callback<List<User>>() {
-//            @Override
-//            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-//                if(response.isSuccessful()){
-//                    List<User> users = response.body();
-//                    assert users != null;
-//                    for (User user : users) {
-//                        System.out.println(user);
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<User>> call, Throwable t) {
-//
-//            }
-//        });
         List<User> res = null;
         Call<List<User>> callGetUsers = serverApi.getUsers();
         try{
             res = callGetUsers.execute().body();
+            for (User user : res)
+                for(Achivement achivement : user.getAchivements())
+                    achivement.setUser(user);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        return res;
+    }
+
+    public List<User> getUsersByUsername(String username) {
+        List<User> res = null;
+        Call<List<User>> callGetUsers = serverApi.getUsersByUsername(username);
+        try{
+            res = callGetUsers.execute().body();
+            for (User user : res)
+                for(Achivement achivement : user.getAchivements())
+                    achivement.setUser(user);
         }catch (Exception e){}
         return res;
     }
@@ -89,6 +91,8 @@ public class ServerApi {
         Call<User> callGetUser = serverApi.getUser(id);
         try{
             res = callGetUser.execute().body();
+            for(Achivement achivement : res.getAchivements())
+                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -98,6 +102,19 @@ public class ServerApi {
         Call<User> callGetUser = serverApi.getUserByUserName(username);
         try{
             res = callGetUser.execute().body();
+            for(Achivement achivement : res.getAchivements())
+                achivement.setUser(res);
+        }catch (Exception e){}
+        return res;
+    }
+
+    public User getUserByAuth() {
+        User res = null;
+        Call<User> callGetUser = serverApi.getUserByUserName(null);
+        try{
+            res = callGetUser.execute().body();
+            for(Achivement achivement : res.getAchivements())
+                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -107,6 +124,8 @@ public class ServerApi {
         Call<User> callCreateUser = serverApi.createUser(user);
         try{
             res = callCreateUser.execute().body();
+            for(Achivement achivement : res.getAchivements())
+                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -116,6 +135,8 @@ public class ServerApi {
         Call<User> callEditUser = serverApi.editUser(user);
         try{
             res = callEditUser.execute().body();
+            for(Achivement achivement : res.getAchivements())
+                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -125,11 +146,13 @@ public class ServerApi {
         Call<User> callDeleteUser = serverApi.deleteUser(id);
         try{
             res = callDeleteUser.execute().body();
+            for(Achivement achivement : res.getAchivements())
+                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
 
-    public byte[] getAvatar(String path){
+    public byte[] getAvatar(){
         ResponseBody res = null;
         Call<ResponseBody> call = serverApi.getAvatar();
         try{
@@ -147,6 +170,16 @@ public class ServerApi {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), fileToUpload);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", fileToUpload.getName(), requestFile);
+
+        Call<Void> call = serverApi.loadAvatar(body);
+        try{
+            call.execute();
+        }catch (Exception e){}
+    }
+
+    public void loadAvatar(File fileToUpload){
         RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), fileToUpload);
         MultipartBody.Part body = MultipartBody.Part.createFormData("file", fileToUpload.getName(), requestFile);
 
@@ -191,7 +224,17 @@ public class ServerApi {
         Call<User> call = serverApi.getNewAchivement(statusLastAchivement);
         try{
             res = call.execute().body();
+            for(Achivement achivement : res.getAchivements())
+                achivement.setUser(res);
         }catch (Exception e){}
         return res;
+    }
+
+    public static String getJwt() {
+        return jwt;
+    }
+
+    public static void setJwt(String jwt) {
+        ServerApi.jwt = jwt;
     }
 }

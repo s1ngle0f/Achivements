@@ -154,7 +154,7 @@ public class AccountFragment extends Fragment {
                             MainActivity.user.addFriend(finalUser);
                         }
 
-                        MainActivity.ServerEmulator.EditUser(MainActivity.user);
+                        MainActivity.serverApi.editUser(MainActivity.user);
                     }
                 }
             });

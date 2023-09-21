@@ -25,6 +25,11 @@ public class User {
     private Set<User> friends = new HashSet<>();
     private Set<Role> roles = new HashSet<>();
 
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public void addFriend(User user){
         if (!friends.stream().anyMatch(friend -> user.getId() == friend.getId()))
             friends.add(user);
@@ -96,5 +101,11 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public Achivement getActiveAchivement() {
+        if(!achivements.isEmpty())
+            return achivements.get(achivements.size()-1);
+        return null;
     }
 }

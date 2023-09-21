@@ -23,6 +23,7 @@ import com.example.achivements.databinding.FragmentHomeBinding;
 import com.example.achivements.models.Achivement;
 import com.example.achivements.models.User;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -64,7 +65,7 @@ private FragmentHomeBinding binding;
                 achivementsRV.setAdapter(achivementAdapter);
                 //!Ачивки
                 TextView homeActiveAchivement = root.findViewById(R.id.home_active_task);
-                homeActiveAchivement.setText(MainActivity.user.GetActiveAchivement().getText());
+                homeActiveAchivement.setText(MainActivity.user.getActiveAchivement().getText());
             }
         }
 
@@ -81,7 +82,7 @@ private FragmentHomeBinding binding;
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString("achivementText", "Some text for test bundle");
-                bundle.putSerializable("achivement", MainActivity.user.GetActiveAchivement());
+                bundle.putSerializable("achivement", (Serializable) MainActivity.user.getActiveAchivement());
                 Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_achivementFragment, bundle);
             }
         });

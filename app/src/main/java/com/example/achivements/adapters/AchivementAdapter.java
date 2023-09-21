@@ -16,6 +16,7 @@ import com.example.achivements.databinding.AchivementItemBinding;
 import com.example.achivements.models.Achivement;
 import com.example.achivements.models.User;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AchivementAdapter extends RecyclerView.Adapter<AchivementAdapter.AchivementHolder> {
@@ -68,7 +69,7 @@ public class AchivementAdapter extends RecyclerView.Adapter<AchivementAdapter.Ac
                 public void onClick(View view) {
                     Bundle args = new Bundle();
                     args.putBoolean("isSelfAccount", false);
-                    args.putSerializable("achivement", achivement);
+                    args.putSerializable("achivement", (Serializable) achivement);
                     try{
                         Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_achivementFragment, args);
                     }catch (Exception e){

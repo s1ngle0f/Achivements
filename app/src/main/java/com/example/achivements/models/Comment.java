@@ -15,6 +15,12 @@ public class Comment {
     private User user;
     private Achivement achivement;
 
+    public Comment(User user, String text) {
+        this.text = text;
+        this.user = user;
+        this.achivement = achivement;
+    }
+
     public int getId() {
         return id;
     }
@@ -45,5 +51,9 @@ public class Comment {
 
     public void setAchivement(Achivement achivement) {
         this.achivement = achivement;
+    }
+
+    public int getUserId(){
+        return user.getId();
     }
 }

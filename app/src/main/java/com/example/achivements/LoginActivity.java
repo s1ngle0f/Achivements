@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.achivements.api.ServerApi;
+import com.example.achivements.models.AuthentificationRequest;
 import com.example.achivements.models.User;
 
 public class LoginActivity extends AppCompatActivity {
@@ -36,25 +38,24 @@ public class LoginActivity extends AppCompatActivity {
         sumbit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String accessToken = null;
+                String jwt = null;
+                User _user;
                 if(loginReg == LoginReg.LOGIN) {
-                    accessToken = MainActivity.ServerEmulator.GetAccessCode(login.getText().toString(), password.getText().toString());
+                    jwt = MainActivity.serverApi.login(new AuthentificationRequest(login.getText().toString(), password.getText().toString()));
                 }else if(loginReg == LoginReg.REG){
-                    accessToken = MainActivity.ServerEmulator.CreateUser(login.getText().toString(), password.getText().toString());
-                    System.out.println(accessToken);
+                    _user = MainActivity.serverApi.createUser(new User(login.getText().toString(), password.getText().toString()));
+                    jwt = MainActivity.serverApi.login(new AuthentificationRequest(_user.getUsername(), _user.getPassword()));
                 }
-                if (accessToken != null) {
-                    User newUser = MainActivity.ServerEmulator.GetUserInfo(login.getText().toString(), accessToken);
-                    if(newUser != null){
-                        MainActivity.editor.putString("login", login.getText().toString());
-                        MainActivity.editor.putString("accessToken", accessToken);
+                System.out.println(jwt);
+                if (!jwt.isEmpty()) {
+                    ServerApi.setJwt(jwt);
+                    _user = MainActivity.serverApi.getUserByAuth();
+                    if(_user != null){
+                        MainActivity.editor.putString("jwt", jwt);
                         MainActivity.editor.apply();
-                        newUser.setAccessToken(accessToken);
-                        System.out.println("newUser " + newUser);
-                        MainActivity.user = newUser;
+                        MainActivity.user = _user;
                     }
                     Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-//                    myIntent.putExtra("user", newUser);
                     startActivity(myIntent);
                 }
             }

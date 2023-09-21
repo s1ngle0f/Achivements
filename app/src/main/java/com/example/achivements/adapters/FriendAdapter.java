@@ -43,9 +43,9 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHold
         }
 
         public void bind(User friend){
-            if(friend.GetActiveAchivement() != null) {
-                friendItemBinding.statusText.setText(friend.GetActiveAchivement().getStatusText());
-                friendItemBinding.achivement.setText(friend.GetActiveAchivement().getText());
+            if(friend.getActiveAchivement() != null) {
+                friendItemBinding.statusText.setText(friend.getActiveAchivement().getStatusText());
+                friendItemBinding.achivement.setText(friend.getActiveAchivement().getText());
             }else{
                 friendItemBinding.statusText.setText("");
                 friendItemBinding.achivement.setText("");
@@ -55,7 +55,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHold
                 public void onClick(View view) {
                     Bundle args = new Bundle();
                     args.putBoolean("isSelfAccount", false);
-                    args.putSerializable("account", friend);
+                    args.putSerializable("account", (Serializable) friend);
                     try{
                         Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_accountFragment, args);
                     }catch (Exception e){

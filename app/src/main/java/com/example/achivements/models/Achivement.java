@@ -15,6 +15,13 @@ public class Achivement {
     private Status status = Status.ACTIVE;
     private String image;
     private Set<Comment> comments = new HashSet<>();
+    private User user;
+
+    public void addComment(Comment comment){
+        boolean isContainComment = comments.stream().anyMatch(_comment -> _comment.getId() == comment.getId());
+        if(!isContainComment)
+            comments.add(comment);
+    }
 
     public String getStatusText() {
         switch (status){
@@ -51,6 +58,14 @@ public class Achivement {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Status getStatus() {
