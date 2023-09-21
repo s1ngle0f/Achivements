@@ -15,9 +15,10 @@ import com.example.achivements.models.User;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHolder> {
-    private ArrayList<User> friendsList = new ArrayList<>();
+    private List<User> friendsList = new ArrayList<>();
     @NonNull
     @Override
     public FriendHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -71,14 +72,14 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHold
         notifyDataSetChanged();
     }
 
-    public void Add(ArrayList<User> friends){
+    public void Add(List<User> friends){
         for (User friend : friends) {
             friendsList.add(friend);
         }
         notifyDataSetChanged();
     }
 
-    public void Set(ArrayList<User> friends){
+    public void Set(List<User> friends){
         friendsList = friends;
         notifyDataSetChanged();
     }

@@ -4,8 +4,12 @@ import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class AuthentificationRequest {
     private String username, password;
+
+    public AuthentificationRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

@@ -30,6 +30,9 @@ import com.example.achivements.models.User;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,7 +40,7 @@ import java.util.Collections;
  * create an instance of this fragment.
  */
 public class AccountFragment extends Fragment {
-
+    private Executor executor = Executors.newSingleThreadExecutor();
     private FragmentAccountBinding binding;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -154,7 +157,11 @@ public class AccountFragment extends Fragment {
                             MainActivity.user.addFriend(finalUser);
                         }
 
-                        MainActivity.serverApi.editUser(MainActivity.user);
+                        CompletableFuture.supplyAsync(() ->
+                            MainActivity.serverApi.editUser(MainActivity.user), executor)
+                                .thenAccept(_user -> {
+                                    MainActivity.user = _user;
+                                });
                     }
                 }
             });

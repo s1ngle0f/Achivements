@@ -1,5 +1,6 @@
 package com.example.achivements.ui.searchFriend;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,53 +23,17 @@ import com.example.achivements.databinding.FragmentSearchFriendsBinding;
 import com.example.achivements.models.User;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SearchFriendsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SearchFriendsFragment extends Fragment {
-
+    private Executor executor = Executors.newSingleThreadExecutor();
     private FragmentSearchFriendsBinding fragmentSearchFriendsBinding;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public SearchFriendsFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SearchFriendsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SearchFriendsFragment newInstance(String param1, String param2) {
-        SearchFriendsFragment fragment = new SearchFriendsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -84,29 +49,25 @@ public class SearchFriendsFragment extends Fragment {
             friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
             FriendAdapter friendAdapter = new FriendAdapter();
-            new Thread(() -> {
-                System.out.println(MainActivity.serverApi.getUsers());
-                friendAdapter.Add((ArrayList<User>) MainActivity.serverApi.getUsers());
-            }).start();
-//            System.out.println(MainActivity.serverApi.getUsers());
-//            friendAdapter.Add((ArrayList<User>) MainActivity.serverApi.getUsers());
+            CompletableFuture.supplyAsync(() -> MainActivity.serverApi.getUsers(), executor)
+                    .thenAccept(users -> {
+                        friendAdapter.Set((ArrayList<User>) users);
+                    });
 
             friendsRV.setAdapter(friendAdapter);
             //!Друзья
             searcher.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
                 @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
                 @Override
                 public void afterTextChanged(Editable editable) {
-                    friendAdapter.Set((ArrayList<User>) MainActivity.serverApi.getUsersByUsername(searcher.getText().toString()));
+                    CompletableFuture.supplyAsync(() ->
+                                    MainActivity.serverApi.getUsersByUsername(searcher.getText().toString()), executor)
+                            .thenAccept(users -> {
+                                friendAdapter.Set((ArrayList<User>) users);
+                            });
                 }
             });
         }

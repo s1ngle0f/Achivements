@@ -27,6 +27,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +37,7 @@ private ActivityMainBinding binding;
 public static SharedPreferences sharedPreferences;
 public static SharedPreferences.Editor editor;
 public static BottomNavigationView BottomNV;
+private Executor executor = Executors.newSingleThreadExecutor();
 //public static User user = createUserInstance();
 public static User user = null;
 public static ServerApi serverApi; //При работе с реальным бэком вернуть интерфейс
@@ -57,11 +61,17 @@ public static MainActivity mainActivity;
             serverApi = new ServerApi();
 
         if(user == null)
-            user = serverApi.getUserByAuth();
+            CompletableFuture.supplyAsync(() -> serverApi.getUserByAuth(), executor)
+                    .thenAccept(_user -> {
+                        MainActivity.user = _user;
+                    });
         else {
             Status statusLastAchivement = user.getActiveAchivement().getStatus();
             if (statusLastAchivement != Status.ACTIVE) {
-                MainActivity.user = serverApi.getNewAchivement(statusLastAchivement);
+                CompletableFuture.supplyAsync(() -> serverApi.getNewAchivement(statusLastAchivement), executor)
+                        .thenAccept(_user -> {
+                            MainActivity.user = _user;
+                        });
             }
         }
 
@@ -76,8 +86,6 @@ public static MainActivity mainActivity;
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         BottomNV = navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home, R.id.searchFriendsFragment, R.id.accountFragment)
                 .build();
@@ -85,59 +93,4 @@ public static MainActivity mainActivity;
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        System.out.println("!onResume!");
-//        System.out.println(user);
-//        if(sharedPreferences != null)
-//            if(sharedPreferences.contains("user")){
-//                String userJson = sharedPreferences.getString("user", "");
-//            }
-//    }
-
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        System.out.println("!onPause!");
-//        System.out.println(user);
-//        if(user!=null)
-//        {
-//            editor.putString("userLogin", user.getUsername());
-//            editor.putString("userAccessToken", user.getAccessToken());
-//            editor.apply();
-//        }
-//    }
-
-//    @Override
-//    protected void onStop() {
-//        serverApi.Destructor();
-//        System.out.println("STOP");
-//        super.onStop();
-//    }
-
-//    private static User createUserInstance(){
-//        User _user = new User("some_login", "some_password", "some_description");
-//        //Создание друзей
-//        ArrayList<User> friends = new ArrayList<>();
-//        for(int i = 0; i < 10; i++){
-//            User _friend = new User("friend_login"+i, "friend_password"+i, "friend_description"+i);
-//            _friend.AddAchivement(new Achivement("TODO Something friend" + i, Achivement.Status.COMPLETED, _friend));
-//            _friend.AddAchivement(new Achivement("TODO Something friend" + i, Achivement.Status.FAILED, _friend));
-//            _friend.AddAchivement(new Achivement("TODO Something friend" + i, Achivement.Status.ACTIVE, _friend));
-//            friends.add(_friend);
-//        }
-//        //!Создание друзей
-//        ArrayList<Achivement> achivements = new ArrayList<>();
-//        achivements.add(new Achivement("TODO MYSELF1", Status.COMPLETED, _user));
-//        achivements.add(new Achivement("TODO MYSELF2", Status.COMPLETED, _user));
-//        achivements.add(new Achivement("TODO MYSELF3", Status.FAILED, _user));
-//        achivements.add(new Achivement("TODO MYSELF4", Status.ACTIVE, _user));
-//
-//        _user.setAchivements(achivements);
-//        _user.setFriends(friends);
-//
-//        return _user;
-//    }
 }

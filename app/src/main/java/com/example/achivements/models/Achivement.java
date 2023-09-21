@@ -2,6 +2,7 @@ package com.example.achivements.models;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,7 +10,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Achivement {
+public class Achivement implements Serializable {
     private int id = 0;
     private String text;
     private Status status = Status.ACTIVE;

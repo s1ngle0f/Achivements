@@ -26,11 +26,14 @@ import com.example.achivements.models.User;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class HomeFragment extends Fragment {
 
 private FragmentHomeBinding binding;
-
+    private Executor executor = Executors.newSingleThreadExecutor();
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel =
@@ -47,7 +50,8 @@ private FragmentHomeBinding binding;
                 FriendAdapter friendAdapter = new FriendAdapter();
 
                 System.out.println("Friends: " + MainActivity.user.getFriends());
-                friendAdapter.Add((ArrayList<User>) MainActivity.user.getFriends());
+                friendAdapter.Add(MainActivity.user.getFriends().stream()
+                        .collect(Collectors.toList()));
 
                 friendsRV.setAdapter(friendAdapter);
             }
@@ -58,12 +62,11 @@ private FragmentHomeBinding binding;
                 achivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
                 AchivementAdapter achivementAdapter = new AchivementAdapter();
-                //        achivementAdapter.Add(new Achivement("TODO Something", "Complete", 1234));
                 ArrayList<Achivement> reversedList = new ArrayList<>(MainActivity.user.getAchivements());
                 Collections.reverse(reversedList);
                 achivementAdapter.Add(reversedList);
                 achivementsRV.setAdapter(achivementAdapter);
-                //!Ачивки
+
                 TextView homeActiveAchivement = root.findViewById(R.id.home_active_task);
                 homeActiveAchivement.setText(MainActivity.user.getActiveAchivement().getText());
             }

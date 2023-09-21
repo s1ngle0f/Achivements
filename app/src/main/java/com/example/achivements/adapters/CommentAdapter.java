@@ -46,7 +46,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
 
         public void bind(Comment comment){
             if(comment != null) {
-                User user = MainActivity.serverApi.getUser(comment.getUserId());
+                User user = comment.getUser();
                 commentItemBinding.commentLogin.setText(user.getUsername());
                 commentItemBinding.commentText.setText(comment.getText());
             }

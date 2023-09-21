@@ -23,10 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import carbon.widget.ImageView;
 
 public class SettingsActivity extends AppCompatActivity {
+    private Executor executor = Executors.newSingleThreadExecutor();
     private ImageView avatarAccount;
     private static int SELECT_PICTURE = 1;
     @Override
@@ -43,7 +47,14 @@ public class SettingsActivity extends AppCompatActivity {
         descriptionField.setText(MainActivity.user.getDescription());
         editSettLogin.setText(MainActivity.user.getUsername());
 
-        byte[] photoBytes = MainActivity.serverApi.getAvatar();
+        byte[][] tmp = {null};
+        byte[] photoBytes;
+        CompletableFuture.supplyAsync(() ->
+                        MainActivity.serverApi.getAvatar(), executor)
+                .thenAccept(_bytes -> {
+                    tmp[0] = _bytes;
+                });
+        photoBytes = tmp[0];
         if(photoBytes != null){
             String base64Photo = Base64.encodeToString(photoBytes, Base64.DEFAULT); // Преобразуйте в Base64 строку
             Uri photoUri = Uri.parse("data:image/jpeg;base64," + base64Photo);
@@ -60,7 +71,11 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 MainActivity.user.setDescription(descriptionField.getText().toString());
-                MainActivity.serverApi.editUser(MainActivity.user);
+                CompletableFuture.supplyAsync(() ->
+                                MainActivity.serverApi.editUser(MainActivity.user), executor)
+                        .thenAccept(_user -> {
+                            MainActivity.user = _user;
+                        });
                 Intent myIntent = new Intent(SettingsActivity.this, MainActivity.class);
                 startActivity(myIntent);
             }
@@ -122,7 +137,8 @@ public class SettingsActivity extends AppCompatActivity {
 
                     // Update user's avatarImage and set the ImageView
 //                    MainActivity.user.setAvatarImage(avatarImageFile.getPath());
-                    MainActivity.serverApi.loadAvatar(selectedImageUri.getPath());
+                    CompletableFuture.runAsync(() ->
+                            MainActivity.serverApi.loadAvatar(selectedImageUri.getPath()), executor);
                     avatarAccount.setImageURI(Uri.fromFile(avatarImageFile));
 
                 } catch (FileNotFoundException e) {

@@ -23,6 +23,7 @@ import com.example.achivements.MainActivity;
 import com.example.achivements.R;
 import com.example.achivements.adapters.CommentAdapter;
 import com.example.achivements.models.Achivement;
+import com.example.achivements.models.AuthentificationRequest;
 import com.example.achivements.models.Comment;
 import com.example.achivements.models.Status;
 import com.example.achivements.models.User;
@@ -35,6 +36,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import carbon.widget.Button;
@@ -46,7 +50,7 @@ import carbon.widget.ImageView;
  * create an instance of this fragment.
  */
 public class AchivementFragment extends Fragment {
-
+    private Executor executor = Executors.newSingleThreadExecutor();
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final int SELECT_PICTURE = 1;
@@ -147,7 +151,7 @@ public class AchivementFragment extends Fragment {
                 cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        MainActivity.user = MainActivity.serverApi.getNewAchivement(Status.FAILED);
+                        getNewAchivement(Status.FAILED);
                         Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
                     }
                 });
@@ -180,7 +184,7 @@ public class AchivementFragment extends Fragment {
 
                                 // Update user's avatarImage and set the ImageView
                                 achivement.setImage(imageName);
-                                MainActivity.user = MainActivity.serverApi.getNewAchivement(Status.COMPLETED);
+                                getNewAchivement(Status.COMPLETED);
                                 Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
                             } catch (FileNotFoundException e) {
                                 throw new RuntimeException(e);
@@ -213,7 +217,11 @@ public class AchivementFragment extends Fragment {
                 Comment newComment = new Comment(MainActivity.user, achivementInputField.getText().toString());
                 achivement.addComment(newComment);
                 commentAdapter.Add(newComment);
-                MainActivity.serverApi.editUser(achivement.getUser());
+                CompletableFuture.supplyAsync(() ->
+                    MainActivity.serverApi.editUser(achivement.getUser()), executor)
+                        .thenAccept(_user -> {
+                            MainActivity.user = _user;
+                        });
             }
         });
 
@@ -223,6 +231,14 @@ public class AchivementFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+    }
+
+    public void getNewAchivement(Status statusLastAchivement){
+        CompletableFuture.supplyAsync(() ->
+            MainActivity.serverApi.getNewAchivement(statusLastAchivement), executor)
+                .thenAccept(_user -> {
+                    MainActivity.user = _user;
+                });
     }
 
     @Override
