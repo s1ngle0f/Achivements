@@ -137,7 +137,9 @@ public class AccountFragment extends Fragment {
 //                        System.out.println("BYTES: " + (_bytes != null));
                         if(_bytes != null){
                             Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
-                            avatar.setImageBitmap(photoUri);
+                            getActivity().runOnUiThread(() -> {
+                                avatar.setImageBitmap(photoUri);
+                            });
                         }
                     });
             System.out.println("ACC " + user);

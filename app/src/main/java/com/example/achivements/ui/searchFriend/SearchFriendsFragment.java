@@ -51,7 +51,9 @@ public class SearchFriendsFragment extends Fragment {
             FriendAdapter friendAdapter = new FriendAdapter();
             CompletableFuture.supplyAsync(() -> MainActivity.serverApi.getUsers(), executor)
                     .thenAccept(users -> {
-                        friendAdapter.Set((ArrayList<User>) users);
+                        getActivity().runOnUiThread(() -> {
+                            friendAdapter.Set((ArrayList<User>) users);
+                        });
                     });
 
             friendsRV.setAdapter(friendAdapter);
@@ -66,7 +68,9 @@ public class SearchFriendsFragment extends Fragment {
                     CompletableFuture.supplyAsync(() ->
                                     MainActivity.serverApi.getUsersByUsername(searcher.getText().toString()), executor)
                             .thenAccept(users -> {
-                                friendAdapter.Set((ArrayList<User>) users);
+                                getActivity().runOnUiThread(() -> {
+                                    friendAdapter.Set((ArrayList<User>) users);
+                                });
                             });
                 }
             });
