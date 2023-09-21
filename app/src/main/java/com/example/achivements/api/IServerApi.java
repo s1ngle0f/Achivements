@@ -54,4 +54,7 @@ public interface IServerApi {
 
     @POST("/get_new_achivement")
     Call<User> getNewAchivement(@Body Status statusLastAchivement);
+
+    @GET("/valid_jwt")
+    Call<Boolean> validJwt();
 }

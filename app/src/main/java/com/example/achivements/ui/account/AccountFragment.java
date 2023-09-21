@@ -1,6 +1,8 @@
 package com.example.achivements.ui.account;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,6 +11,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,11 +131,15 @@ public class AccountFragment extends Fragment {
         else {
             root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
             user = MainActivity.user;
-            String projectFolderPath = MainActivity.mainActivity.getApplicationContext().getFilesDir() + "/project/";
-            String imageName = "avatar.jpg"; // Change the image name as needed
-            File avatarImageFile = new File(projectFolderPath + imageName);
-            if(avatarImageFile.exists())
-                avatar.setImageURI(Uri.fromFile(avatarImageFile));
+            CompletableFuture.supplyAsync(() ->
+                            MainActivity.serverApi.getAvatar(), executor)
+                    .thenAccept(_bytes -> {
+//                        System.out.println("BYTES: " + (_bytes != null));
+                        if(_bytes != null){
+                            Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                            avatar.setImageBitmap(photoUri);
+                        }
+                    });
             System.out.println("ACC " + user);
         }
         if(user != null) {

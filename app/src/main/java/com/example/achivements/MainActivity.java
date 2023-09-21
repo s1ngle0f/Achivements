@@ -52,9 +52,20 @@ public static MainActivity mainActivity;
         if(sharedPreferences == null){
             sharedPreferences = getSharedPreferences("mySettings", Context.MODE_PRIVATE);
             editor = sharedPreferences.edit();
-            String jwt = sharedPreferences.getString("jwt", null);
-            if(jwt != null)
+            String jwt = sharedPreferences.getString("jwt", "");
+            if(!jwt.isEmpty())
                 ServerApi.setJwt(jwt);
+            CompletableFuture.supplyAsync(() -> serverApi.validJwt(), executor)
+                    .thenAccept(_isValid -> {
+                        if(!_isValid){
+                            MainActivity.editor.clear();
+                            MainActivity.editor.apply();
+                            MainActivity.user = null;
+                            ServerApi.setJwt("");
+                            Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(myIntent);
+                        }
+                    });
         }
 
         if(serverApi == null)

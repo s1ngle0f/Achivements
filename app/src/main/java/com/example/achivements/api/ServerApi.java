@@ -56,6 +56,7 @@ public class ServerApi {
             res = callLogin.execute().body().getToken();
         }catch (Exception e){
             System.out.println(e.toString());
+            throw new RuntimeException(e);
         }
         return res;
     }
@@ -228,6 +229,16 @@ public class ServerApi {
                 achivement.setUser(res);
         }catch (Exception e){}
         return res;
+    }
+
+    public boolean validJwt(){
+        boolean res = false;
+        Call<Boolean> call = serverApi.validJwt();
+        try{
+            res = call.execute().body();
+            return res;
+        }catch (Exception e){}
+        return false;
     }
 
     public static String getJwt() {

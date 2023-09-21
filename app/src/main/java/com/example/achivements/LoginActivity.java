@@ -43,12 +43,14 @@ public class LoginActivity extends AppCompatActivity {
                     User _user;
                     if(loginReg == LoginReg.LOGIN) {
                         jwt = MainActivity.serverApi.login(new AuthentificationRequest(login.getText().toString(), password.getText().toString()));
+                        System.out.println(login.getText().toString() + " " + password.getText().toString());
+                        System.out.println("LoginReg.LOGIN: " + jwt);
                     }else if(loginReg == LoginReg.REG){
                         _user = MainActivity.serverApi.createUser(new User(login.getText().toString(), password.getText().toString()));
                         jwt = MainActivity.serverApi.login(new AuthentificationRequest(_user.getUsername(), _user.getPassword()));
                     }
-                    System.out.println(jwt);
                     if (jwt != null && !jwt.isEmpty()) {
+                        System.out.println("jwt:" + jwt);
                         ServerApi.setJwt(jwt);
                         _user = MainActivity.serverApi.getUserByAuth();
                         if(_user != null){
@@ -56,9 +58,9 @@ public class LoginActivity extends AppCompatActivity {
                             MainActivity.editor.apply();
                             MainActivity.user = _user;
                         }
-                        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(myIntent);
                     }
+                    Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(myIntent);
                 }).start();
             }
         });

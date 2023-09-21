@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.Navigation;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
@@ -32,6 +34,9 @@ import carbon.widget.ImageView;
 public class SettingsActivity extends AppCompatActivity {
     private Executor executor = Executors.newSingleThreadExecutor();
     private ImageView avatarAccount;
+    private byte[] imageBytes;
+    private String imagePath;
+    private File avatarImageFile;
     private static int SELECT_PICTURE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +52,15 @@ public class SettingsActivity extends AppCompatActivity {
         descriptionField.setText(MainActivity.user.getDescription());
         editSettLogin.setText(MainActivity.user.getUsername());
 
-        byte[][] tmp = {null};
-        byte[] photoBytes;
         CompletableFuture.supplyAsync(() ->
                         MainActivity.serverApi.getAvatar(), executor)
                 .thenAccept(_bytes -> {
-                    tmp[0] = _bytes;
+                    if(_bytes != null){
+                        Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                        avatarAccount.setImageBitmap(photoUri);
+                    }
                 });
-        photoBytes = tmp[0];
-        if(photoBytes != null){
-            String base64Photo = Base64.encodeToString(photoBytes, Base64.DEFAULT); // Преобразуйте в Base64 строку
-            Uri photoUri = Uri.parse("data:image/jpeg;base64," + base64Photo);
-            avatarAccount.setImageURI(photoUri);
-        }
+
 
 //        String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
 //        String imageName = "avatar.jpg";
@@ -71,11 +72,12 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 MainActivity.user.setDescription(descriptionField.getText().toString());
-                CompletableFuture.supplyAsync(() ->
-                                MainActivity.serverApi.editUser(MainActivity.user), executor)
-                        .thenAccept(_user -> {
-                            MainActivity.user = _user;
-                        });
+                new Thread(() -> {
+                    MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
+                    if(avatarImageFile != null){
+                        MainActivity.serverApi.loadAvatar(avatarImageFile);
+                    }
+                }).start();
                 Intent myIntent = new Intent(SettingsActivity.this, MainActivity.class);
                 startActivity(myIntent);
             }
@@ -87,7 +89,7 @@ public class SettingsActivity extends AppCompatActivity {
                 MainActivity.editor.clear();
                 MainActivity.editor.apply();
                 MainActivity.user = null;
-                ServerApi.setJwt(null);
+                ServerApi.setJwt("");
                 Intent myIntent = new Intent(SettingsActivity.this, MainActivity.class);
                 startActivity(myIntent);
             }
@@ -112,40 +114,21 @@ public class SettingsActivity extends AppCompatActivity {
             if (requestCode == SELECT_PICTURE) {
                 Uri selectedImageUri = data.getData();
 
-                try {
-                    // Copy the selected image to the project folder
-                    String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
-                    File projectFolder = new File(projectFolderPath);
-                    if (!projectFolder.exists()) {
-                        projectFolder.mkdir();
-                    }
-
-                    String imageName = "avatar.jpg";
-                    File avatarImageFile = new File(projectFolderPath + imageName);
-
-                    InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
-//                    OutputStream outputStream = new FileOutputStream(avatarImageFile);
-//
-//                    byte[] buffer = new byte[1024];
-//                    int length;
-//                    while ((length = inputStream.read(buffer)) > 0) {
-//                        outputStream.write(buffer, 0, length);
-//                    }
-
-                    inputStream.close();
-//                    outputStream.close();
-
-                    // Update user's avatarImage and set the ImageView
-//                    MainActivity.user.setAvatarImage(avatarImageFile.getPath());
-                    CompletableFuture.runAsync(() ->
-                            MainActivity.serverApi.loadAvatar(selectedImageUri.getPath()), executor);
-                    avatarAccount.setImageURI(Uri.fromFile(avatarImageFile));
-
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                // Copy the selected image to the project folder
+                String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
+                File projectFolder = new File(projectFolderPath);
+                if (!projectFolder.exists()) {
+                    projectFolder.mkdir();
                 }
+
+                String imageName = "avatar.jpg";
+                avatarImageFile = new File(projectFolderPath + imageName);
+
+                CompletableFuture.runAsync(() ->
+                        MainActivity.serverApi.loadAvatar(selectedImageUri.getPath()), executor);
+                Uri uriFromFile = Uri.fromFile(avatarImageFile);
+                avatarAccount.setImageURI(uriFromFile);
+                imageBytes = HelpFunctions.getBytesFromUri(uriFromFile, getContentResolver());
             }
         }
     }
