@@ -5,6 +5,8 @@ import com.example.achivements.models.ApiResponse;
 import com.example.achivements.models.AuthentificationRequest;
 import com.example.achivements.models.Status;
 import com.example.achivements.models.User;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -66,9 +68,6 @@ public class ServerApi {
         Call<List<User>> callGetUsers = serverApi.getUsers();
         try{
             res = callGetUsers.execute().body();
-            for (User user : res)
-                for(Achivement achivement : user.getAchivements())
-                    achivement.setUser(user);
         }catch (Exception e){
             throw new RuntimeException(e);
         }
@@ -80,9 +79,6 @@ public class ServerApi {
         Call<List<User>> callGetUsers = serverApi.getUsersByUsername(username);
         try{
             res = callGetUsers.execute().body();
-            for (User user : res)
-                for(Achivement achivement : user.getAchivements())
-                    achivement.setUser(user);
         }catch (Exception e){}
         return res;
     }
@@ -92,8 +88,6 @@ public class ServerApi {
         Call<User> callGetUser = serverApi.getUser(id);
         try{
             res = callGetUser.execute().body();
-            for(Achivement achivement : res.getAchivements())
-                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -103,8 +97,6 @@ public class ServerApi {
         Call<User> callGetUser = serverApi.getUserByUserName(username);
         try{
             res = callGetUser.execute().body();
-            for(Achivement achivement : res.getAchivements())
-                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -114,8 +106,6 @@ public class ServerApi {
         Call<User> callGetUser = serverApi.getUserByUserName(null);
         try{
             res = callGetUser.execute().body();
-            for(Achivement achivement : res.getAchivements())
-                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -125,8 +115,6 @@ public class ServerApi {
         Call<User> callCreateUser = serverApi.createUser(user);
         try{
             res = callCreateUser.execute().body();
-            for(Achivement achivement : res.getAchivements())
-                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -136,8 +124,6 @@ public class ServerApi {
         Call<User> callEditUser = serverApi.editUser(user);
         try{
             res = callEditUser.execute().body();
-            for(Achivement achivement : res.getAchivements())
-                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -147,8 +133,6 @@ public class ServerApi {
         Call<User> callDeleteUser = serverApi.deleteUser(id);
         try{
             res = callDeleteUser.execute().body();
-            for(Achivement achivement : res.getAchivements())
-                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }
@@ -225,8 +209,6 @@ public class ServerApi {
         Call<User> call = serverApi.getNewAchivement(statusLastAchivement);
         try{
             res = call.execute().body();
-            for(Achivement achivement : res.getAchivements())
-                achivement.setUser(res);
         }catch (Exception e){}
         return res;
     }

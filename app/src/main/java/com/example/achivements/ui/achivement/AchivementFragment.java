@@ -101,6 +101,7 @@ public class AchivementFragment extends Fragment {
 
         Bundle args = getArguments();
         Achivement achivement = (Achivement) args.getSerializable("achivement");
+        User owner = (User) args.getSerializable("owner");
         TextView achivementText = root.findViewById(R.id.achivement_text);
         TextView achivementLogin = root.findViewById(R.id.achivement_login);
         TextView achivementStatus = root.findViewById(R.id.achivement_status);
@@ -208,7 +209,7 @@ public class AchivementFragment extends Fragment {
             }
         }
         achivementText.setText(achivement.getText());
-        achivementLogin.setText(achivement.getUser().getUsername());
+        achivementLogin.setText(owner.getUsername());
         achivementStatus.setText("Achivement: " + achivement.getStatusText());
 
         achivementsSender.setOnClickListener(new View.OnClickListener() {
@@ -217,11 +218,11 @@ public class AchivementFragment extends Fragment {
                 Comment newComment = new Comment(MainActivity.user, achivementInputField.getText().toString());
                 achivement.addComment(newComment);
                 commentAdapter.Add(newComment);
-                CompletableFuture.supplyAsync(() ->
-                    MainActivity.serverApi.editUser(achivement.getUser()), executor)
-                        .thenAccept(_user -> {
-                            MainActivity.user = _user;
-                        });
+//                CompletableFuture.supplyAsync(() ->
+//                    MainActivity.serverApi.editUser(achivement.getUser()), executor)
+//                        .thenAccept(_user -> {
+//                            MainActivity.user = _user;
+//                        });
             }
         });
 

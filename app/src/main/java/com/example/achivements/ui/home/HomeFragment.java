@@ -61,14 +61,16 @@ private FragmentHomeBinding binding;
                 RecyclerView achivementsRV = root.findViewById(R.id.achivement_rv);
                 achivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
-                AchivementAdapter achivementAdapter = new AchivementAdapter();
+                AchivementAdapter achivementAdapter = new AchivementAdapter(MainActivity.user);
                 ArrayList<Achivement> reversedList = new ArrayList<>(MainActivity.user.getAchivements());
                 Collections.reverse(reversedList);
                 achivementAdapter.Add(reversedList);
                 achivementsRV.setAdapter(achivementAdapter);
 
                 TextView homeActiveAchivement = root.findViewById(R.id.home_active_task);
-                homeActiveAchivement.setText(MainActivity.user.getActiveAchivement().getText());
+                Achivement activeAchivement = MainActivity.user.getActiveAchivement();
+                if(activeAchivement != null)
+                    homeActiveAchivement.setText(activeAchivement.getText());
             }
         }
 

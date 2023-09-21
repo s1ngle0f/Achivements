@@ -175,7 +175,7 @@ public class AccountFragment extends Fragment {
                 }
             });
             if(user.getAchivements() != null){
-                AchivementAdapter achivementAdapter = new AchivementAdapter();
+                AchivementAdapter achivementAdapter = new AchivementAdapter(user);
                 ArrayList<Achivement> reversedList = new ArrayList<>(user.getAchivements());
                 Collections.reverse(reversedList);
                 achivementAdapter.Add(reversedList);

@@ -58,6 +58,7 @@ public static MainActivity mainActivity;
             CompletableFuture.supplyAsync(() -> serverApi.validJwt(), executor)
                     .thenAccept(_isValid -> {
                         if(!_isValid){
+                            System.out.println("ASDDSA");
                             MainActivity.editor.clear();
                             MainActivity.editor.apply();
                             MainActivity.user = null;

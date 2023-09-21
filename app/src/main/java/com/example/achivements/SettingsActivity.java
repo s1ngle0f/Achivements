@@ -74,8 +74,9 @@ public class SettingsActivity extends AppCompatActivity {
                 MainActivity.user.setDescription(descriptionField.getText().toString());
                 new Thread(() -> {
                     MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
-                    if(avatarImageFile != null){
-                        MainActivity.serverApi.loadAvatar(avatarImageFile);
+                    System.out.println("editAccountConfirm: " + MainActivity.user);
+                    if(imagePath != null){
+                        MainActivity.serverApi.loadAvatar(imagePath);
                     }
                 }).start();
                 Intent myIntent = new Intent(SettingsActivity.this, MainActivity.class);
@@ -114,15 +115,8 @@ public class SettingsActivity extends AppCompatActivity {
             if (requestCode == SELECT_PICTURE) {
                 Uri selectedImageUri = data.getData();
 
-                // Copy the selected image to the project folder
-                String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
-                File projectFolder = new File(projectFolderPath);
-                if (!projectFolder.exists()) {
-                    projectFolder.mkdir();
-                }
-
-                String imageName = "avatar.jpg";
-                avatarImageFile = new File(projectFolderPath + imageName);
+                imagePath = selectedImageUri.getPath();
+                avatarImageFile = new File(imagePath);
 
                 CompletableFuture.runAsync(() ->
                         MainActivity.serverApi.loadAvatar(selectedImageUri.getPath()), executor);

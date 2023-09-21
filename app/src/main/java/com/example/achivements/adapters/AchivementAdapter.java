@@ -21,6 +21,11 @@ import java.util.ArrayList;
 
 public class AchivementAdapter extends RecyclerView.Adapter<AchivementAdapter.AchivementHolder> {
     private ArrayList<Achivement> achivements = new ArrayList<>();
+    private User owner;
+
+    public AchivementAdapter(User owner) {
+        this.owner = owner;
+    }
 
     @NonNull
     @Override
@@ -69,6 +74,7 @@ public class AchivementAdapter extends RecyclerView.Adapter<AchivementAdapter.Ac
                 public void onClick(View view) {
                     Bundle args = new Bundle();
                     args.putBoolean("isSelfAccount", false);
+                    args.putSerializable("owner", (Serializable) owner);
                     args.putSerializable("achivement", (Serializable) achivement);
                     try{
                         Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_achivementFragment, args);

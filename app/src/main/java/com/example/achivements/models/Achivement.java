@@ -16,7 +16,7 @@ public class Achivement implements Serializable {
     private Status status = Status.ACTIVE;
     private String image;
     private Set<Comment> comments = new HashSet<>();
-    private User user;
+//    private User user;
 
     public void addComment(Comment comment){
         boolean isContainComment = comments.stream().anyMatch(_comment -> _comment.getId() == comment.getId());
@@ -61,13 +61,13 @@ public class Achivement implements Serializable {
         this.text = text;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+//    public User getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
     public Status getStatus() {
         return status;
