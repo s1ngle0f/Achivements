@@ -150,6 +150,7 @@ public class ServerApi {
 
     public void loadAvatar(String path){
         File fileToUpload = null;
+        System.out.println("PATH: " + path);
         try {
             fileToUpload = new File(new String(path.getBytes("Windows-1251"), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -167,6 +168,17 @@ public class ServerApi {
     public void loadAvatar(File fileToUpload){
         RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), fileToUpload);
         MultipartBody.Part body = MultipartBody.Part.createFormData("file", fileToUpload.getName(), requestFile);
+
+        Call<Void> call = serverApi.loadAvatar(body);
+        try{
+            call.execute();
+        }catch (Exception e){}
+    }
+
+    public void loadAvatar(String filename, byte[] bytes){
+        System.out.println("START LOAD: " + filename);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), bytes);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", filename, requestFile);
 
         Call<Void> call = serverApi.loadAvatar(body);
         try{
@@ -195,6 +207,18 @@ public class ServerApi {
 //        File fileToUpload = new File(path);
         RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), fileToUpload);
         MultipartBody.Part body = MultipartBody.Part.createFormData("file", fileToUpload.getName(), requestFile);
+
+        Call<Void> call = serverApi.loadImageAchivement(achivement.getId(), body);
+        try{
+            call.execute();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void loadImageAchivement(byte[] bytes, Achivement achivement){
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), bytes);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", achivement.getId() + ".png", requestFile);
 
         Call<Void> call = serverApi.loadImageAchivement(achivement.getId(), body);
         try{

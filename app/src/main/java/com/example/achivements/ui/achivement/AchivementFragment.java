@@ -3,6 +3,8 @@ package com.example.achivements.ui.achivement;
 import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -19,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.achivements.HelpFunctions;
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
 import com.example.achivements.adapters.CommentAdapter;
@@ -126,16 +129,17 @@ public class AchivementFragment extends Fragment {
             selector.setVisibility(View.GONE);
         }
         else{
-            if(achivement.getImage() != null){
-                String projectFolderPath = MainActivity.mainActivity.getApplicationContext().getFilesDir() + "/server/";
-                File projectFolder = new File(projectFolderPath);
-                if (!projectFolder.exists()) {
-                    projectFolder.mkdir();
-                }
-
-                File avatarImageFile = new File(projectFolderPath + achivement.getImage());
-                achivementImage.setImageURI(Uri.fromFile(avatarImageFile));
-            }
+            CompletableFuture.supplyAsync(() ->
+                            MainActivity.serverApi.getImageAchivement(achivement), executor)
+                    .thenAccept(_bytes -> {
+//                        System.out.println("BYTES: " + (_bytes != null));
+                        if(_bytes != null){
+                            Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                            getActivity().runOnUiThread(() -> {
+                                achivementImage.setImageBitmap(photoUri);
+                            });
+                        }
+                    });
             if(MainActivity.user.getAchivements().stream().anyMatch(_achivement -> _achivement.getId() == achivement.getId()) && achivement.getStatus() == Status.ACTIVE){
                 inputComment.setVisibility(View.GONE);
                 selector.setVisibility(View.VISIBLE);
@@ -161,36 +165,25 @@ public class AchivementFragment extends Fragment {
                     public void onClick(View view) {
                         if(selectedImageUri != null){
                             try {
-                                // Copy the selected image to the project folder
-                                String projectFolderPath = MainActivity.mainActivity.getApplicationContext().getFilesDir() + "/server/";
-                                File projectFolder = new File(projectFolderPath);
-                                if (!projectFolder.exists()) {
-                                    projectFolder.mkdir();
-                                }
+                                new Thread(() -> {
+//                                    MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
+//                                    System.out.println("editAccountConfirm: " + MainActivity.user);
+                                    byte[] imageBytes;
+                                    try {
+                                        InputStream inputStream = MainActivity.mainActivity.getContentResolver().openInputStream(selectedImageUri);
+                                        imageBytes = HelpFunctions.getBytes(inputStream);
+                                        inputStream.close();
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                    if(imageBytes != null){
+                                        MainActivity.serverApi.loadImageAchivement(imageBytes, achivement);
+                                    }
+                                }).start();
 
-                                String imageName = new File("" + selectedImageUri).getName(); // Change the image name as needed
-                                File avatarImageFile = new File(projectFolderPath + imageName);
-
-                                InputStream inputStream = MainActivity.mainActivity.getContentResolver().openInputStream(selectedImageUri);
-                                OutputStream outputStream = new FileOutputStream(avatarImageFile);
-
-                                byte[] buffer = new byte[1024];
-                                int length;
-                                while ((length = inputStream.read(buffer)) > 0) {
-                                    outputStream.write(buffer, 0, length);
-                                }
-
-                                inputStream.close();
-                                outputStream.close();
-
-                                // Update user's avatarImage and set the ImageView
                                 achivement.setImage(imageName);
                                 getNewAchivement(Status.COMPLETED);
                                 Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
-                            } catch (FileNotFoundException e) {
-                                throw new RuntimeException(e);
-                            } catch (IOException e) {
-                                e.printStackTrace();
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
@@ -247,9 +240,6 @@ public class AchivementFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
-//                Uri selectedImageUri = data.getData();
-//                MainActivity.user.setAvatarImage(selectedImageUri);
-//                avatarAccount.setImageURI(selectedImageUri);
                 selectedImageUri = data.getData();
                 achivementImage.setImageURI(selectedImageUri);
             }

@@ -76,7 +76,7 @@ public class SettingsActivity extends AppCompatActivity {
                     MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
                     System.out.println("editAccountConfirm: " + MainActivity.user);
                     if(imagePath != null){
-                        MainActivity.serverApi.loadAvatar(imagePath);
+                        MainActivity.serverApi.loadAvatar("avatar.png", imageBytes);
                     }
                 }).start();
                 Intent myIntent = new Intent(SettingsActivity.this, MainActivity.class);
@@ -118,11 +118,21 @@ public class SettingsActivity extends AppCompatActivity {
                 imagePath = selectedImageUri.getPath();
                 avatarImageFile = new File(imagePath);
 
-                CompletableFuture.runAsync(() ->
-                        MainActivity.serverApi.loadAvatar(selectedImageUri.getPath()), executor);
-                Uri uriFromFile = Uri.fromFile(avatarImageFile);
-                avatarAccount.setImageURI(uriFromFile);
-                imageBytes = HelpFunctions.getBytesFromUri(uriFromFile, getContentResolver());
+                try {
+                    // Открываем поток для выбранного изображения и читаем его байты
+                    InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
+                    imageBytes = HelpFunctions.getBytes(inputStream);
+
+                    // Теперь у вас есть байты изображения в переменной imageBytes
+                    // Можете делать с ними, что угодно
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+//                Uri uriFromFile = Uri.fromFile(avatarImageFile);
+//                avatarAccount.setImageURI(uriFromFile);
+                Bitmap photoUri = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                avatarAccount.setImageBitmap(photoUri);
             }
         }
     }
