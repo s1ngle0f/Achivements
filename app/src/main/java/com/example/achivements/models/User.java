@@ -2,6 +2,7 @@ package com.example.achivements.models;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-public class User {
+public class User implements Serializable {
     private int id = 0;
     private String username;
     private String password;
