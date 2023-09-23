@@ -72,11 +72,17 @@ public static MainActivity mainActivity;
         if(serverApi == null)
             serverApi = new ServerApi();
 
-        if(user == null)
+        if(user == null) {
             CompletableFuture.supplyAsync(() -> serverApi.getUserByAuth(), executor)
                     .thenAccept(_user -> {
                         MainActivity.user = _user;
                     });
+            if(user.getActiveAchivement() == null)
+                CompletableFuture.supplyAsync(() -> serverApi.getNewAchivement(Status.COMPLETED), executor)
+                        .thenAccept(_user -> {
+                            MainActivity.user = _user;
+                        });
+        }
         else {
             Achivement activeAchivement = user.getActiveAchivement();
             if(activeAchivement != null) {
@@ -87,6 +93,11 @@ public static MainActivity mainActivity;
                                 MainActivity.user = _user;
                             });
                 }
+            }else{
+                CompletableFuture.supplyAsync(() -> serverApi.getNewAchivement(Status.COMPLETED), executor)
+                        .thenAccept(_user -> {
+                            MainActivity.user = _user;
+                        });
             }
         }
 
