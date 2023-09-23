@@ -171,11 +171,11 @@ public class AccountFragment extends Fragment {
                         startActivity(myIntent);
                     }else{
                         if(MainActivity.user.getFriends().stream().anyMatch(user1 -> user1.equals(finalUser))){
-                            subscribeButton.setText("Отписаться");
                             MainActivity.user.removeFriend(finalUser);
-                        }else{
                             subscribeButton.setText("Подписаться");
+                        }else{
                             MainActivity.user.addFriend(finalUser);
+                            subscribeButton.setText("Отписаться");
                         }
 
                         CompletableFuture.supplyAsync(() ->
