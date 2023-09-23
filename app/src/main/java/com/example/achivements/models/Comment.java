@@ -12,13 +12,11 @@ import lombok.Setter;
 public class Comment {
     private int id = 0;
     private String text;
-    private User user;
-    private Achivement achivement;
+    private int userId;
 
-    public Comment(User user, String text) {
+    public Comment(int userId, String text) {
         this.text = text;
-        this.user = user;
-        this.achivement = achivement;
+        this.userId = userId;
     }
 
     public int getId() {
@@ -37,23 +35,16 @@ public class Comment {
         this.text = text;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Achivement getAchivement() {
-        return achivement;
-    }
-
-    public void setAchivement(Achivement achivement) {
-        this.achivement = achivement;
-    }
-
     public int getUserId(){
-        return user.getId();
+        return userId;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", text='" + text + '\'' +
+                ", userId=" + userId +
+                '}';
     }
 }

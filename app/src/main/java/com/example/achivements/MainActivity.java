@@ -76,12 +76,12 @@ public static MainActivity mainActivity;
             CompletableFuture.supplyAsync(() -> serverApi.getUserByAuth(), executor)
                     .thenAccept(_user -> {
                         MainActivity.user = _user;
+                        if(user.getActiveAchivement() == null)
+                            CompletableFuture.supplyAsync(() -> serverApi.getNewAchivement(Status.COMPLETED), executor)
+                                    .thenAccept(__user -> {
+                                        MainActivity.user = __user;
+                                    });
                     });
-            if(user.getActiveAchivement() == null)
-                CompletableFuture.supplyAsync(() -> serverApi.getNewAchivement(Status.COMPLETED), executor)
-                        .thenAccept(_user -> {
-                            MainActivity.user = _user;
-                        });
         }
         else {
             Achivement activeAchivement = user.getActiveAchivement();

@@ -2,6 +2,7 @@ package com.example.achivements.api;
 
 import com.example.achivements.models.ApiResponse;
 import com.example.achivements.models.AuthentificationRequest;
+import com.example.achivements.models.Comment;
 import com.example.achivements.models.Status;
 import com.example.achivements.models.User;
 
@@ -57,6 +58,9 @@ public interface IServerApi {
 
     @POST("/get_new_achivement")
     Call<User> getNewAchivement(@Body Status statusLastAchivement);
+
+    @POST("/add_comment/{id}")
+    Call<User> addComment(@Path(value = "id") int id, @Body Comment comment);
 
     @GET("/valid_jwt")
     Call<Boolean> validJwt();

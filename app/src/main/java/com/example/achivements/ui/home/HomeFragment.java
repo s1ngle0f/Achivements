@@ -88,6 +88,7 @@ private FragmentHomeBinding binding;
                 Bundle bundle = new Bundle();
                 bundle.putString("achivementText", "Some text for test bundle");
                 bundle.putSerializable("achivement", (Serializable) MainActivity.user.getActiveAchivement());
+                bundle.putSerializable("owner", (Serializable) MainActivity.user);
                 Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_achivementFragment, bundle);
             }
         });

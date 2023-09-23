@@ -1,5 +1,7 @@
 package com.example.achivements.adapters;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +19,12 @@ import com.example.achivements.models.User;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentHolder> {
+    private Executor executor = Executors.newSingleThreadExecutor();
     private ArrayList<Comment> commentList = new ArrayList<>();
     @NonNull
     @Override
@@ -46,9 +52,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
 
         public void bind(Comment comment){
             if(comment != null) {
-                User user = comment.getUser();
-                commentItemBinding.commentLogin.setText(user.getUsername());
-                commentItemBinding.commentText.setText(comment.getText());
+                CompletableFuture.supplyAsync(() ->
+                                MainActivity.serverApi.getUser(comment.getUserId()), executor)
+                        .thenAccept(_user -> {
+                            commentItemBinding.commentLogin.setText(_user.getUsername());
+                            commentItemBinding.commentText.setText(comment.getText());
+                        });
             }
         }
     }

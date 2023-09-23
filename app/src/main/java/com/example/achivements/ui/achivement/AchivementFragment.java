@@ -208,7 +208,7 @@ public class AchivementFragment extends Fragment {
         achivementsSender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Comment newComment = new Comment(MainActivity.user, achivementInputField.getText().toString());
+                Comment newComment = new Comment(MainActivity.user.getId(), achivementInputField.getText().toString());
                 achivement.addComment(newComment);
                 commentAdapter.Add(newComment);
 //                CompletableFuture.supplyAsync(() ->

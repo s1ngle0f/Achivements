@@ -3,6 +3,7 @@ package com.example.achivements.api;
 import com.example.achivements.models.Achivement;
 import com.example.achivements.models.ApiResponse;
 import com.example.achivements.models.AuthentificationRequest;
+import com.example.achivements.models.Comment;
 import com.example.achivements.models.Status;
 import com.example.achivements.models.User;
 import com.google.gson.Gson;
@@ -244,6 +245,15 @@ public class ServerApi {
     public User getNewAchivement(Status statusLastAchivement){
         User res = null;
         Call<User> call = serverApi.getNewAchivement(statusLastAchivement);
+        try{
+            res = call.execute().body();
+        }catch (Exception e){}
+        return res;
+    }
+
+    public User addComment(int achivementId, Comment comment){
+        User res = null;
+        Call<User> call = serverApi.addComment(achivementId, comment);
         try{
             res = call.execute().body();
         }catch (Exception e){}
