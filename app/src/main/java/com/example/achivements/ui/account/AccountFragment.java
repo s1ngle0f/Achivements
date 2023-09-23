@@ -121,10 +121,22 @@ public class AccountFragment extends Fragment {
             else{
                 root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
                 user = (User) args.getSerializable("account");
-                if(MainActivity.user == user) {
+                if(MainActivity.user.equals(user)) {
                     root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
                     root.findViewById(R.id.account_settings_button).setVisibility(View.VISIBLE);
                 }
+                int userId = user.getId();
+                CompletableFuture.supplyAsync(() ->
+                                MainActivity.serverApi.getAvatarById(userId), executor)
+                        .thenAccept(_bytes -> {
+//                        System.out.println("BYTES: " + (_bytes != null));
+                            if(_bytes != null){
+                                Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                                getActivity().runOnUiThread(() -> {
+                                    avatar.setImageBitmap(photoUri);
+                                });
+                            }
+                        });
                 System.out.println("NOSELF ACC " + user);
             }
         }
@@ -147,10 +159,10 @@ public class AccountFragment extends Fragment {
         if(user != null) {
             accountLogin.setText(user.getUsername());
             accountDescription.setText(user.getDescription());
-            if(MainActivity.user != null && MainActivity.user.getFriends() != null && MainActivity.user.getFriends().contains(user)){
+            User finalUser = user;
+            if(MainActivity.user != null && MainActivity.user.getFriends() != null && MainActivity.user.getFriends().stream().anyMatch(user1 -> user1.equals(finalUser))){
                 subscribeButton.setText("Отписаться");
             }
-            User finalUser = user;
             subscribeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -158,7 +170,7 @@ public class AccountFragment extends Fragment {
                         Intent myIntent = new Intent(getActivity(), LoginActivity.class);
                         startActivity(myIntent);
                     }else{
-                        if(MainActivity.user.getFriends().contains(finalUser)){
+                        if(MainActivity.user.getFriends().stream().anyMatch(user1 -> user1.equals(finalUser))){
                             subscribeButton.setText("Отписаться");
                             MainActivity.user.removeFriend(finalUser);
                         }else{
@@ -167,7 +179,7 @@ public class AccountFragment extends Fragment {
                         }
 
                         CompletableFuture.supplyAsync(() ->
-                            MainActivity.serverApi.editUser(MainActivity.user), executor)
+                                        MainActivity.serverApi.editUser(MainActivity.user), executor)
                                 .thenAccept(_user -> {
                                     MainActivity.user = _user;
                                 });

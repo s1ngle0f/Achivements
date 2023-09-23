@@ -78,12 +78,15 @@ public static MainActivity mainActivity;
                         MainActivity.user = _user;
                     });
         else {
-            Status statusLastAchivement = user.getActiveAchivement().getStatus();
-            if (statusLastAchivement != Status.ACTIVE) {
-                CompletableFuture.supplyAsync(() -> serverApi.getNewAchivement(statusLastAchivement), executor)
-                        .thenAccept(_user -> {
-                            MainActivity.user = _user;
-                        });
+            Achivement activeAchivement = user.getActiveAchivement();
+            if(activeAchivement != null) {
+                Status statusLastAchivement = activeAchivement.getStatus();
+                if (statusLastAchivement != Status.ACTIVE) {
+                    CompletableFuture.supplyAsync(() -> serverApi.getNewAchivement(statusLastAchivement), executor)
+                            .thenAccept(_user -> {
+                                MainActivity.user = _user;
+                            });
+                }
             }
         }
 

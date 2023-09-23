@@ -41,6 +41,9 @@ public interface IServerApi {
     @GET("/image/avatar")
     Call<ResponseBody> getAvatar();
 
+    @GET("/image/avatar/{id}")
+    Call<ResponseBody> getAvatarById(@Path(value = "id") int id);
+
     @Multipart
     @POST("/image/avatar")
     Call<Void> loadAvatar(@Part MultipartBody.Part file);

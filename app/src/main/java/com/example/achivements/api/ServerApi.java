@@ -112,7 +112,8 @@ public class ServerApi {
 
     public User createUser(User user) {
         User res = null;
-        Call<User> callCreateUser = serverApi.createUser(user);
+        User _user = User.getUserForExport(user);
+        Call<User> callCreateUser = serverApi.createUser(_user);
         try{
             res = callCreateUser.execute().body();
         }catch (Exception e){}
@@ -121,7 +122,8 @@ public class ServerApi {
 
     public User editUser(User user) {
         User res = null;
-        Call<User> callEditUser = serverApi.editUser(user);
+        User _user = User.getUserForExport(user);
+        Call<User> callEditUser = serverApi.editUser(_user);
         try{
             res = callEditUser.execute().body();
         }catch (Exception e){}
@@ -140,6 +142,17 @@ public class ServerApi {
     public byte[] getAvatar(){
         ResponseBody res = null;
         Call<ResponseBody> call = serverApi.getAvatar();
+        try{
+            res = call.execute().body();
+            assert res != null;
+            return res.bytes();
+        }catch (Exception e){}
+        return null;
+    }
+
+    public byte[] getAvatarById(int id){
+        ResponseBody res = null;
+        Call<ResponseBody> call = serverApi.getAvatarById(id);
         try{
             res = call.execute().body();
             assert res != null;
