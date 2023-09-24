@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ServerApi {
-    private static final String BASE_URL = "http://192.168.0.136:8080";
+    private static final String BASE_URL = "http://45.141.101.204";
     private static String jwt = "";
     OkHttpClient client;
     Retrofit retrofit;
@@ -69,6 +69,7 @@ public class ServerApi {
         try{
             res = callGetUsers.execute().body();
         }catch (Exception e){
+            System.out.println(e);
 //            throw new RuntimeException(e);
         }
         return res;

@@ -29,6 +29,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(MainActivity.serverApi == null)
+            MainActivity.serverApi = new ServerApi();
+
         setContentView(R.layout.activity_login);
 
         if (getSupportActionBar() != null) {

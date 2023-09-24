@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
+import com.example.achivements.api.ServerApi;
 import com.example.achivements.db.LocalDatabase;
 import com.example.achivements.db.model.AchivementImage;
 
@@ -28,6 +29,8 @@ import com.example.achivements.db.model.AchivementImage;
 public class ExampleInstrumentedTest {
     SQLiteDatabase db;
     Context context;
+
+    ServerApi serverApi = new ServerApi();
 
     public static LocalDatabase database;
     @Before
@@ -61,5 +64,10 @@ public class ExampleInstrumentedTest {
     @Test
     public void getAllAchivementImages(){
         System.out.println(database.achivementImageDao().getAllAchivementImages());
+    }
+
+    @Test
+    public void getFromDeployServer(){
+        System.out.println(serverApi.getUsers());
     }
 }

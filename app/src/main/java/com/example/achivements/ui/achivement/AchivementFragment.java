@@ -167,6 +167,11 @@ public class AchivementFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 getNewAchivement(Status.FAILED);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+
+                }
                 Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
             }
         });
@@ -195,6 +200,7 @@ public class AchivementFragment extends Fragment {
 
                         achivement.setImage(imageName);
                         getNewAchivement(Status.COMPLETED);
+                        Thread.sleep(100);
                         Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
                     } catch (Exception e) {
                         throw new RuntimeException(e);

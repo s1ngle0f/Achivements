@@ -56,7 +56,7 @@ public static MainActivity mainActivity;
 
         Bundle args = getIntent().getExtras();
 
-//        getPermissions();
+        getPermissions();
 
         createLocalDatabase();
 
