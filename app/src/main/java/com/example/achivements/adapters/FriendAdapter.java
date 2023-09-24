@@ -1,24 +1,39 @@
 package com.example.achivements.adapters;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.achivements.MainActivity;
 import com.example.achivements.R;
 import com.example.achivements.databinding.FriendItemBinding;
+import com.example.achivements.models.Achivement;
 import com.example.achivements.models.User;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHolder> {
     private List<User> friendsList = new ArrayList<>();
+    private Activity activity;
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
     @NonNull
     @Override
     public FriendHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -44,6 +59,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHold
         }
 
         public void bind(User friend){
+            loadAvatar(friend);
             if(friend.getActiveAchivement() != null) {
                 friendItemBinding.statusText.setText(friend.getUsername());
                 friendItemBinding.achivement.setText(friend.getActiveAchivement().getText());
@@ -64,6 +80,34 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHold
                     }
                 }
             });
+        }
+
+        private Executor executor = Executors.newSingleThreadExecutor();
+        private void loadAvatar(User user){
+            if(user != null && user.equals(MainActivity.user)){
+                CompletableFuture.supplyAsync(() ->
+                                MainActivity.serverApi.getAvatar(), executor)
+                        .thenAccept(_bytes -> {
+                            if(_bytes != null){
+                                Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                                activity.runOnUiThread(() -> {
+                                    friendItemBinding.avatarImage.setImageBitmap(photoUri);
+                                });
+                            }
+                        });
+            }else{
+                int userId = user.getId();
+                CompletableFuture.supplyAsync(() ->
+                                MainActivity.serverApi.getAvatarById(userId), executor)
+                        .thenAccept(_bytes -> {
+                            if(_bytes != null){
+                                Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                                activity.runOnUiThread(() -> {
+                                    friendItemBinding.avatarImage.setImageBitmap(photoUri);
+                                });
+                            }
+                        });
+            }
         }
     }
 

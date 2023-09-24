@@ -146,6 +146,7 @@ private FragmentHomeBinding binding;
         friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
         FriendAdapter friendAdapter = new FriendAdapter();
+        friendAdapter.setActivity(getActivity());
 
         friendAdapter.Add(MainActivity.user.getFriends().stream()
                 .collect(Collectors.toList()));

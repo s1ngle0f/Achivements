@@ -78,6 +78,7 @@ public class SearchFriendsFragment extends Fragment {
         friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
 
         friendAdapter = new FriendAdapter();
+        friendAdapter.setActivity(getActivity());
         CompletableFuture.supplyAsync(() -> MainActivity.serverApi.getUsers(), executor)
                 .thenAccept(users -> {
                     getActivity().runOnUiThread(() -> {
