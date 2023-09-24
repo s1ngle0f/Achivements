@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.achivements.api.ServerApi;
+import com.example.achivements.db.LocalDatabase;
+import com.example.achivements.db.model.AchivementImage;
 import com.example.achivements.models.Achivement;
 import com.example.achivements.models.Status;
 import com.example.achivements.models.User;
@@ -22,6 +24,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.Room;
+
 import com.example.achivements.databinding.ActivityMainBinding;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
 private ActivityMainBinding binding;
 public static SharedPreferences sharedPreferences;
+public static LocalDatabase database;
 public static SharedPreferences.Editor editor;
 public static BottomNavigationView BottomNV;
 private Executor executor = Executors.newSingleThreadExecutor();
@@ -47,6 +52,8 @@ public static MainActivity mainActivity;
         System.out.println("START MAINACTIVITY");
 
         Bundle args = getIntent().getExtras();
+
+        createLocalDatabase();
 
         gettingFromSharedPreferences();
 
@@ -69,6 +76,19 @@ public static MainActivity mainActivity;
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+    }
+
+    private void createLocalDatabase() {
+        if(database == null){
+            database = Room.databaseBuilder(this, LocalDatabase.class, "testRoomDBZero")
+                    .allowMainThreadQueries() // Позволяет выполнять запросы на главном потоке (для демонстрации, не рекомендуется в реальном приложении)
+                    .build();
+        }
+        AchivementImage achivementImage = new AchivementImage();
+        achivementImage.achivementId = 2;
+//        database.achivementImageDao().insert(achivementImage);
+//        database.clearAllTables();
+        System.out.println(database.achivementImageDao().getAllAchivementImages());
     }
 
     private void creatingUserAndServer(){
