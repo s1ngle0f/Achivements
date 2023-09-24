@@ -19,6 +19,10 @@ public class LoginActivity extends AppCompatActivity {
         REG
     }
     static LoginReg loginReg = LoginReg.LOGIN;
+    private static final String register = "Зарегистрироваться";
+    private static final String registration = "Регистрация";
+    private static final String entrance = "Вход";
+    private static final String enter = "Войти";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,15 +55,15 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(loginReg == LoginReg.LOGIN){
-                    sumbit.setText("Зарегистрироваться");
+                    sumbit.setText(register);
                     sumbit.setTextSize(11);
-                    switcher.setText("Вход");
+                    switcher.setText(entrance);
                     passwordTwice.setVisibility(View.VISIBLE);
                     loginReg = LoginReg.REG;
                 } else if(loginReg == LoginReg.REG){
-                    sumbit.setText("Войти");
+                    sumbit.setText(enter);
                     sumbit.setTextSize(16);
-                    switcher.setText("Регистрация");
+                    switcher.setText(registration);
                     passwordTwice.setVisibility(View.GONE);
                     loginReg = LoginReg.LOGIN;
                 }
@@ -80,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
             ServerApi.setJwt(jwt);
             _user = MainActivity.serverApi.getUserByAuth();
             if(_user != null){
-                MainActivity.editor.putString("jwt", jwt);
+                MainActivity.editor.putString(HelpFunctions.jwt, jwt);
                 MainActivity.editor.apply();
                 MainActivity.user = _user;
             }

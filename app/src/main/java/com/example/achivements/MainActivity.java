@@ -49,7 +49,6 @@ public static MainActivity mainActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("START MAINACTIVITY");
 
         Bundle args = getIntent().getExtras();
 
@@ -80,15 +79,10 @@ public static MainActivity mainActivity;
 
     private void createLocalDatabase() {
         if(database == null){
-            database = Room.databaseBuilder(this, LocalDatabase.class, "testRoomDBZero")
+            database = Room.databaseBuilder(this, LocalDatabase.class, HelpFunctions.databaseName)
                     .allowMainThreadQueries() // Позволяет выполнять запросы на главном потоке (для демонстрации, не рекомендуется в реальном приложении)
                     .build();
         }
-        AchivementImage achivementImage = new AchivementImage();
-        achivementImage.achivementId = 2;
-//        database.achivementImageDao().insert(achivementImage);
-//        database.clearAllTables();
-        System.out.println(database.achivementImageDao().getAllAchivementImages());
     }
 
     private void creatingUserAndServer(){
@@ -127,15 +121,14 @@ public static MainActivity mainActivity;
 
     private void gettingFromSharedPreferences(){
         if(sharedPreferences == null){
-            sharedPreferences = getSharedPreferences("mySettings", Context.MODE_PRIVATE);
+            sharedPreferences = getSharedPreferences(HelpFunctions.nameSharedPreferences, Context.MODE_PRIVATE);
             editor = sharedPreferences.edit();
-            String jwt = sharedPreferences.getString("jwt", "");
+            String jwt = sharedPreferences.getString(HelpFunctions.jwt, "");
             if(!jwt.isEmpty())
                 ServerApi.setJwt(jwt);
             CompletableFuture.supplyAsync(() -> serverApi.validJwt(), executor)
                     .thenAccept(_isValid -> {
                         if(!_isValid){
-                            System.out.println("ASDDSA");
                             MainActivity.editor.clear();
                             MainActivity.editor.apply();
                             MainActivity.user = null;

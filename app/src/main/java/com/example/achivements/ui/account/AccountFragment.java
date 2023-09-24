@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.achivements.HelpFunctions;
 import com.example.achivements.LoginActivity;
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
@@ -39,6 +40,8 @@ import java.util.concurrent.Executors;
 
 
 public class AccountFragment extends Fragment {
+    private static final String unsubscribe = "Отписаться";
+    private static final String subscribe = "Подписаться";
     private Executor executor = Executors.newSingleThreadExecutor();
     private FragmentAccountBinding binding;
     View root;
@@ -51,7 +54,6 @@ public class AccountFragment extends Fragment {
     RecyclerView accountLastAchivementsRV;
 
     public AccountFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -102,10 +104,10 @@ public class AccountFragment extends Fragment {
                 }else{
                     if(MainActivity.user.getFriends().stream().anyMatch(user1 -> user1.equals(user))){
                         MainActivity.user.removeFriend(user);
-                        subscribeButton.setText("Подписаться");
+                        subscribeButton.setText(subscribe);
                     }else{
                         MainActivity.user.addFriend(user);
-                        subscribeButton.setText("Отписаться");
+                        subscribeButton.setText(unsubscribe);
                     }
 
                     CompletableFuture.supplyAsync(() ->
@@ -121,17 +123,15 @@ public class AccountFragment extends Fragment {
     private void chooseAccountMode(User user){
         if(user != null && user.equals(MainActivity.user)){
             root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
-            System.out.println("ACC " + user);
         }else{
             root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
-            System.out.println("NOSELF ACC " + user);
         }
     }
 
     private User getUserAccount(){
         if(args == null) return MainActivity.user;
-        if(args.getBoolean("isSelfAccount", true)) return MainActivity.user;
-        return (User) args.getSerializable("account");
+        if(args.getBoolean(HelpFunctions.isSelfAccount, true)) return MainActivity.user;
+        return (User) args.getSerializable(HelpFunctions.account);
     }
 
     private void generateUserAchivements(User user) {
@@ -149,7 +149,7 @@ public class AccountFragment extends Fragment {
             accountLogin.setText(user.getUsername());
             accountDescription.setText(user.getDescription());
             if(MainActivity.user != null && MainActivity.user.getFriends() != null && MainActivity.user.getFriends().stream().anyMatch(user1 -> user1.equals(user))){
-                subscribeButton.setText("Отписаться");
+                subscribeButton.setText(unsubscribe);
             }
             generateUserAchivements(user);
         }

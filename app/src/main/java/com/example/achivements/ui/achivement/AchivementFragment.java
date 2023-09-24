@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -89,8 +90,8 @@ public class AchivementFragment extends Fragment {
         acceptButton = root.findViewById(R.id.achivement_accept_button);
         inputComment = root.findViewById(R.id.achivement_input_comment);
         selector = root.findViewById(R.id.achivement_selector);
-        achivement = (Achivement) args.getSerializable("achivement");
-        owner = (User) args.getSerializable("owner");
+        achivement = (Achivement) args.getSerializable(HelpFunctions.achivement);
+        owner = (User) args.getSerializable(HelpFunctions.owner);
 
         achivementCommentRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
         commentAdapter = new CommentAdapter();
@@ -127,7 +128,7 @@ public class AchivementFragment extends Fragment {
     private void putIntoTemplate() {
         achivementText.setText(achivement.getText());
         achivementLogin.setText(owner.getUsername());
-        achivementStatus.setText("Achivement: " + achivement.getStatusText());
+        achivementStatus.setText(MessageFormat.format("Achivement: {0}", achivement.getStatusText()));
 
         achivementsSender.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,8 +176,6 @@ public class AchivementFragment extends Fragment {
                 if(selectedImageUri != null || isLoadFromLocalDB){
                     try {
                         new Thread(() -> {
-//                                    MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
-//                                    System.out.println("editAccountConfirm: " + MainActivity.user);
                             byte[] imageBytes;
                             try {
                                 if(!isLoadFromLocalDB){
@@ -209,7 +208,6 @@ public class AchivementFragment extends Fragment {
         new Thread(() -> {
             AchivementImage _achivementImageData = MainActivity.database.achivementImageDao().getImageByAchivementId(achivement.getId());
             if(_achivementImageData == null) {
-                System.out.println("LOAD FROM SERVER");
                 CompletableFuture.supplyAsync(() ->
                                 MainActivity.serverApi.getImageAchivement(achivement), executor)
                         .thenAccept(_bytes -> {

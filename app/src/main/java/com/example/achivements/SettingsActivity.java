@@ -62,7 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
                 new Thread(() -> {
                     MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
                     if(imagePath != null){
-                        MainActivity.serverApi.loadAvatar("avatar.png", imageBytes);
+                        MainActivity.serverApi.loadAvatar(HelpFunctions.uploadFilename, imageBytes);
                     }
                 }).start();
                 Intent myIntent = new Intent(SettingsActivity.this, MainActivity.class);

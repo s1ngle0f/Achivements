@@ -11,6 +11,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class HelpFunctions {
+    public static final String databaseName = "localDatabaseForImage";
+    public static final String isSelfAccount = "isSelfAccount";
+    public static final String account = "account";
+    public static final String achivement = "achivement";
+    public static final String owner = "owner";
+    public static final String jwt = "jwt";
+    public static final String nameSharedPreferences = "mySettings";
+    public static final String uploadFilename = "avatar.png";
+
     public static byte[] getBytesFromUri(Uri uri, ContentResolver contentResolver) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         InputStream inputStream = null;

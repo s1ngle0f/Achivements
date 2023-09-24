@@ -15,6 +15,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.achivements.HelpFunctions;
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
 import com.example.achivements.adapters.AchivementAdapter;
@@ -41,7 +42,6 @@ private FragmentHomeBinding binding;
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        System.out.println("HOME_Fragment");
         if(MainActivity.user != null) {
             if(MainActivity.user.getFriends() != null){
                 createFriendsAdapter(root);
@@ -76,7 +76,6 @@ private FragmentHomeBinding binding;
 
         FriendAdapter friendAdapter = new FriendAdapter();
 
-        System.out.println("Friends: " + MainActivity.user.getFriends());
         friendAdapter.Add(MainActivity.user.getFriends().stream()
                 .collect(Collectors.toList()));
 
@@ -91,9 +90,8 @@ private FragmentHomeBinding binding;
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString("achivementText", "Some text for test bundle");
-                bundle.putSerializable("achivement", (Serializable) MainActivity.user.getActiveAchivement());
-                bundle.putSerializable("owner", (Serializable) MainActivity.user);
+                bundle.putSerializable(HelpFunctions.achivement, (Serializable) MainActivity.user.getActiveAchivement());
+                bundle.putSerializable(HelpFunctions.owner, (Serializable) MainActivity.user);
                 Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_achivementFragment, bundle);
             }
         });
