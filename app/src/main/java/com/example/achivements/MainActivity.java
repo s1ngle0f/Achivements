@@ -3,6 +3,7 @@ package com.example.achivements;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -20,6 +21,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -46,11 +49,14 @@ private Executor executor = Executors.newSingleThreadExecutor();
 public static User user = null;
 public static ServerApi serverApi;
 public static MainActivity mainActivity;
+    public static final int CAMERA_PERMISSION_REQUEST_CODE = 101;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle args = getIntent().getExtras();
+
+//        getPermissions();
 
         createLocalDatabase();
 
@@ -75,6 +81,14 @@ public static MainActivity mainActivity;
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+    }
+
+    public void getPermissions() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_REQUEST_CODE);
+        }
     }
 
     private void createLocalDatabase() {
@@ -138,5 +152,13 @@ public static MainActivity mainActivity;
                         }
                     });
         }
+    }
+
+    public boolean checkCameraPermission() {
+        int cameraPermission = PackageManager.PERMISSION_GRANTED;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            cameraPermission = checkSelfPermission(android.Manifest.permission.CAMERA);
+        }
+        return cameraPermission == PackageManager.PERMISSION_GRANTED;
     }
 }

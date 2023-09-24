@@ -47,10 +47,12 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp">
             <ImageView
+                android:id="@+id/make_selfie_field"
                 android:layout_width="match_parent"
                 android:layout_height="205dp"
                 android:background="@drawable/active_achivement_image_background"
                 android:src="@drawable/make_selfie"
+                android:clickable="true"
                 android:scaleType="centerCrop"/>
             <LinearLayout
                 android:id="@+id/current_achivement"
