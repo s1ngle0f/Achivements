@@ -38,7 +38,6 @@ public static SharedPreferences sharedPreferences;
 public static SharedPreferences.Editor editor;
 public static BottomNavigationView BottomNV;
 private Executor executor = Executors.newSingleThreadExecutor();
-//public static User user = createUserInstance();
 public static User user = null;
 public static ServerApi serverApi; //При работе с реальным бэком вернуть интерфейс
 public static MainActivity mainActivity;
@@ -49,26 +48,30 @@ public static MainActivity mainActivity;
 
         Bundle args = getIntent().getExtras();
 
-        if(sharedPreferences == null){
-            sharedPreferences = getSharedPreferences("mySettings", Context.MODE_PRIVATE);
-            editor = sharedPreferences.edit();
-            String jwt = sharedPreferences.getString("jwt", "");
-            if(!jwt.isEmpty())
-                ServerApi.setJwt(jwt);
-            CompletableFuture.supplyAsync(() -> serverApi.validJwt(), executor)
-                    .thenAccept(_isValid -> {
-                        if(!_isValid){
-                            System.out.println("ASDDSA");
-                            MainActivity.editor.clear();
-                            MainActivity.editor.apply();
-                            MainActivity.user = null;
-                            ServerApi.setJwt("");
-                            Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
-                            startActivity(myIntent);
-                        }
-                    });
+        gettingFromSharedPreferences();
+
+        creatingUserAndServer();
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
         }
 
+        mainActivity = this;
+        /////////////////////////////////////
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        BottomNV = navView;
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.navigation_home, R.id.searchFriendsFragment, R.id.accountFragment)
+                .build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(binding.navView, navController);
+    }
+
+    private void creatingUserAndServer(){
         if(serverApi == null)
             serverApi = new ServerApi();
 
@@ -100,23 +103,27 @@ public static MainActivity mainActivity;
                         });
             }
         }
+    }
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
+    private void gettingFromSharedPreferences(){
+        if(sharedPreferences == null){
+            sharedPreferences = getSharedPreferences("mySettings", Context.MODE_PRIVATE);
+            editor = sharedPreferences.edit();
+            String jwt = sharedPreferences.getString("jwt", "");
+            if(!jwt.isEmpty())
+                ServerApi.setJwt(jwt);
+            CompletableFuture.supplyAsync(() -> serverApi.validJwt(), executor)
+                    .thenAccept(_isValid -> {
+                        if(!_isValid){
+                            System.out.println("ASDDSA");
+                            MainActivity.editor.clear();
+                            MainActivity.editor.apply();
+                            MainActivity.user = null;
+                            ServerApi.setJwt("");
+                            Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(myIntent);
+                        }
+                    });
         }
-
-        mainActivity = this;
-        /////////////////////////////////////
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        BottomNV = navView;
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.searchFriendsFragment, R.id.accountFragment)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
     }
 }

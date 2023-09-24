@@ -45,7 +45,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendHold
 
         public void bind(User friend){
             if(friend.getActiveAchivement() != null) {
-                friendItemBinding.statusText.setText(friend.getActiveAchivement().getStatusText());
+                friendItemBinding.statusText.setText(friend.getUsername());
                 friendItemBinding.achivement.setText(friend.getActiveAchivement().getText());
             }else{
                 friendItemBinding.statusText.setText("");

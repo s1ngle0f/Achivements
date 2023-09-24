@@ -38,35 +38,22 @@ public class SettingsActivity extends AppCompatActivity {
     private String imagePath;
     private File avatarImageFile;
     private static int SELECT_PICTURE = 1;
+    EditText descriptionField;
+    TextView editSettLogin;
+    Button editAccountConfirm;
+    Button editAccountExit;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
         avatarAccount = findViewById(R.id.edit_account_image);
-        EditText descriptionField = findViewById(R.id.edit_account_descripton);
-        TextView editSettLogin = findViewById(R.id.edit_account_login);
-        Button editAccountConfirm = findViewById(R.id.edit_account_confirm);
-        Button editAccountExit= findViewById(R.id.edit_account_exit);
+        descriptionField = findViewById(R.id.edit_account_descripton);
+        editSettLogin = findViewById(R.id.edit_account_login);
+        editAccountConfirm = findViewById(R.id.edit_account_confirm);
+        editAccountExit= findViewById(R.id.edit_account_exit);
 
-        descriptionField.setText(MainActivity.user.getDescription());
-        editSettLogin.setText(MainActivity.user.getUsername());
-
-        CompletableFuture.supplyAsync(() ->
-                        MainActivity.serverApi.getAvatar(), executor)
-                .thenAccept(_bytes -> {
-                    if(_bytes != null){
-                        Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
-                        avatarAccount.setImageBitmap(photoUri);
-                    }
-                });
-
-
-//        String projectFolderPath = getApplicationContext().getFilesDir() + "/project/";
-//        String imageName = "avatar.jpg";
-//        File avatarImageFile = new File(projectFolderPath + imageName);
-//        if(avatarImageFile.exists())
-//            avatarAccount.setImageURI(Uri.fromFile(avatarImageFile));
+        setUserData();
 
         editAccountConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +61,6 @@ public class SettingsActivity extends AppCompatActivity {
                 MainActivity.user.setDescription(descriptionField.getText().toString());
                 new Thread(() -> {
                     MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
-                    System.out.println("editAccountConfirm: " + MainActivity.user);
                     if(imagePath != null){
                         MainActivity.serverApi.loadAvatar("avatar.png", imageBytes);
                     }
@@ -119,21 +105,31 @@ public class SettingsActivity extends AppCompatActivity {
                 avatarImageFile = new File(imagePath);
 
                 try {
-                    // Открываем поток для выбранного изображения и читаем его байты
                     InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
                     imageBytes = HelpFunctions.getBytes(inputStream);
-
-                    // Теперь у вас есть байты изображения в переменной imageBytes
-                    // Можете делать с ними, что угодно
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-//                Uri uriFromFile = Uri.fromFile(avatarImageFile);
-//                avatarAccount.setImageURI(uriFromFile);
                 Bitmap photoUri = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                 avatarAccount.setImageBitmap(photoUri);
             }
         }
+    }
+
+    private void setUserData(){
+        if(MainActivity.user != null){
+            descriptionField.setText(MainActivity.user.getDescription());
+            editSettLogin.setText(MainActivity.user.getUsername());
+        }
+
+        CompletableFuture.supplyAsync(() ->
+                        MainActivity.serverApi.getAvatar(), executor)
+                .thenAccept(_bytes -> {
+                    if(_bytes != null){
+                        Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                        avatarAccount.setImageBitmap(photoUri);
+                    }
+                });
     }
 }

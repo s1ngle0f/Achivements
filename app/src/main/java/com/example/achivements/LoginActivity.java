@@ -39,28 +39,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new Thread(() -> {
-                    String jwt = null;
-                    User _user;
-                    if(loginReg == LoginReg.LOGIN) {
-                        jwt = MainActivity.serverApi.login(new AuthentificationRequest(login.getText().toString(), password.getText().toString()));
-                        System.out.println(login.getText().toString() + " " + password.getText().toString());
-                        System.out.println("LoginReg.LOGIN: " + jwt);
-                    }else if(loginReg == LoginReg.REG){
-                        _user = MainActivity.serverApi.createUser(new User(login.getText().toString(), password.getText().toString()));
-                        jwt = MainActivity.serverApi.login(new AuthentificationRequest(_user.getUsername(), _user.getPassword()));
-                    }
-                    if (jwt != null && !jwt.isEmpty()) {
-                        System.out.println("jwt:" + jwt);
-                        ServerApi.setJwt(jwt);
-                        _user = MainActivity.serverApi.getUserByAuth();
-                        if(_user != null){
-                            MainActivity.editor.putString("jwt", jwt);
-                            MainActivity.editor.apply();
-                            MainActivity.user = _user;
-                        }
-                    }
-                    Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(myIntent);
+                    logIn(
+                            login.getText().toString(),
+                            password.getText().toString(),
+                            passwordTwice.getText().toString());
                 }).start();
             }
         });
@@ -83,5 +65,27 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void logIn(String login, String password, String passwordTwice){
+        String jwt = null;
+        User _user;
+        if(loginReg == LoginReg.LOGIN) {
+            jwt = MainActivity.serverApi.login(new AuthentificationRequest(login, password));
+        }else if(loginReg == LoginReg.REG && password.equals(passwordTwice)){
+            _user = MainActivity.serverApi.createUser(new User(login, password));
+            jwt = MainActivity.serverApi.login(new AuthentificationRequest(_user.getUsername(), _user.getPassword()));
+        }
+        if (jwt != null && !jwt.isEmpty()) {
+            ServerApi.setJwt(jwt);
+            _user = MainActivity.serverApi.getUserByAuth();
+            if(_user != null){
+                MainActivity.editor.putString("jwt", jwt);
+                MainActivity.editor.apply();
+                MainActivity.user = _user;
+            }
+        }
+        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(myIntent);
     }
 }

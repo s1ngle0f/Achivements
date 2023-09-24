@@ -47,160 +47,81 @@ import java.util.stream.Collectors;
 import carbon.widget.Button;
 import carbon.widget.ImageView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AchivementFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class AchivementFragment extends Fragment {
     private Executor executor = Executors.newSingleThreadExecutor();
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final int SELECT_PICTURE = 1;
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public AchivementFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AchivementFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AchivementFragment newInstance(String param1, String param2) {
-        AchivementFragment fragment = new AchivementFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
     private android.widget.ImageView achivementImage;
     private String imageName;
     private Uri selectedImageUri;
+    Bundle args;
+    TextView achivementText;
+    TextView achivementLogin;
+    TextView achivementStatus;
+    TextView achivementInputField;
+    ImageView achivementsSender;
+    RecyclerView achivementCommentRV;
+    Button cancelButton;
+    Button acceptButton;
+    android.widget.LinearLayout inputComment;
+    android.widget.LinearLayout selector;
+    Achivement achivement;
+    User owner;
+    CommentAdapter commentAdapter;
+
+    private void init(View root){
+        args = getArguments();
+        achivementText = root.findViewById(R.id.achivement_text);
+        achivementLogin = root.findViewById(R.id.achivement_login);
+        achivementStatus = root.findViewById(R.id.achivement_status);
+        achivementInputField = root.findViewById(R.id.achivement_inputfield_comment);
+        achivementsSender = root.findViewById(R.id.achivement_send_button);
+        achivementImage = root.findViewById(R.id.achivement_image);
+        achivementCommentRV = root.findViewById(R.id.achivement_comment_rv);
+        cancelButton = root.findViewById(R.id.achivement_cancel_button);
+        acceptButton = root.findViewById(R.id.achivement_accept_button);
+        inputComment = root.findViewById(R.id.achivement_input_comment);
+        selector = root.findViewById(R.id.achivement_selector);
+        achivement = (Achivement) args.getSerializable("achivement");
+        owner = (User) args.getSerializable("owner");
+
+        achivementCommentRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+        commentAdapter = new CommentAdapter();
+        commentAdapter.Add((ArrayList<Comment>) achivement.getComments().stream().collect(Collectors.toList()));
+        achivementCommentRV.setAdapter(commentAdapter);
+        if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.GONE);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_achivement, container, false);
 
-        Bundle args = getArguments();
-        Achivement achivement = (Achivement) args.getSerializable("achivement");
-        User owner = (User) args.getSerializable("owner");
-        TextView achivementText = root.findViewById(R.id.achivement_text);
-        TextView achivementLogin = root.findViewById(R.id.achivement_login);
-        TextView achivementStatus = root.findViewById(R.id.achivement_status);
-        TextView achivementInputField = root.findViewById(R.id.achivement_inputfield_comment);
-        ImageView achivementsSender = root.findViewById(R.id.achivement_send_button);
-        achivementImage = root.findViewById(R.id.achivement_image);
-        RecyclerView achivementCommentRV = root.findViewById(R.id.achivement_comment_rv);
-        Button cancelButton = root.findViewById(R.id.achivement_cancel_button);
-        Button acceptButton = root.findViewById(R.id.achivement_accept_button);
-        android.widget.LinearLayout inputComment = root.findViewById(R.id.achivement_input_comment);
-        android.widget.LinearLayout selector = root.findViewById(R.id.achivement_selector);
+        init(root);
 
-        achivementCommentRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
-        CommentAdapter commentAdapter = new CommentAdapter();
-        commentAdapter.Add((ArrayList<Comment>) achivement.getComments().stream().collect(Collectors.toList()));
-
-        achivementCommentRV.setAdapter(commentAdapter);
-
-        if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.GONE);
+        loadAchivementImage();
         if(MainActivity.user == null) {
             inputComment.setVisibility(View.GONE);
             selector.setVisibility(View.GONE);
         }
         else{
-            CompletableFuture.supplyAsync(() ->
-                            MainActivity.serverApi.getImageAchivement(achivement), executor)
-                    .thenAccept(_bytes -> {
-//                        System.out.println("BYTES: " + (_bytes != null));
-                        if(_bytes != null){
-                            Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
-                            getActivity().runOnUiThread(() -> {
-                                achivementImage.setImageBitmap(photoUri);
-                            });
-                        }
-                    });
-            if(MainActivity.user.getAchivements().stream().anyMatch(_achivement -> _achivement.getId() == achivement.getId()) && achivement.getStatus() == Status.ACTIVE){
-                inputComment.setVisibility(View.GONE);
-                selector.setVisibility(View.VISIBLE);
-                achivementImage.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent();
-                        intent.setType("image/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                        startActivityForResult(Intent.createChooser(intent,
-                                "Select Picture"), SELECT_PICTURE);
-                    }
-                });
-                cancelButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        getNewAchivement(Status.FAILED);
-                        Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
-                    }
-                });
-                acceptButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(selectedImageUri != null){
-                            try {
-                                new Thread(() -> {
-//                                    MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
-//                                    System.out.println("editAccountConfirm: " + MainActivity.user);
-                                    byte[] imageBytes;
-                                    try {
-                                        InputStream inputStream = MainActivity.mainActivity.getContentResolver().openInputStream(selectedImageUri);
-                                        imageBytes = HelpFunctions.getBytes(inputStream);
-                                        inputStream.close();
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                    if(imageBytes != null){
-                                        MainActivity.serverApi.loadImageAchivement(imageBytes, achivement);
-                                    }
-                                }).start();
-
-                                achivement.setImage(imageName);
-                                getNewAchivement(Status.COMPLETED);
-                                Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                });
+            if(MainActivity.user.getAchivements().stream().anyMatch(_achivement -> _achivement.getId() == achivement.getId()) &&
+                    achivement.getStatus() == Status.ACTIVE){
+                visibleForActiveAchivement();
             }else{
-                inputComment.setVisibility(View.VISIBLE);
-                selector.setVisibility(View.GONE);
-                if(achivement.getImage() != null) {
-                    String projectFolderPath = MainActivity.mainActivity.getApplicationContext().getFilesDir() + "/server/";
-                    File avatarImageFile = new File(projectFolderPath + achivement.getImage());
-                    if (avatarImageFile.exists())
-                        achivementImage.setImageURI(Uri.fromFile(avatarImageFile));
-                }
+                visibleForFinishedAchivement();
             }
         }
+        putIntoTemplate();
+
+        return root;
+    }
+
+    private void putIntoTemplate() {
         achivementText.setText(achivement.getText());
         achivementLogin.setText(owner.getUsername());
         achivementStatus.setText("Achivement: " + achivement.getStatusText());
@@ -211,28 +132,90 @@ public class AchivementFragment extends Fragment {
                 Comment newComment = new Comment(MainActivity.user.getId(), achivementInputField.getText().toString());
                 achivement.addComment(newComment);
                 commentAdapter.Add(newComment);
-//                CompletableFuture.supplyAsync(() ->
-//                    MainActivity.serverApi.editUser(achivement.getUser()), executor)
-//                        .thenAccept(_user -> {
-//                            MainActivity.user = _user;
-//                        });
+                CompletableFuture.supplyAsync(() ->
+                                MainActivity.serverApi.editUser(owner), executor)
+                        .thenAccept(_user -> {
+                            MainActivity.user = _user;
+                        });
             }
         });
-
-        return root;
     }
+
+    private void visibleForFinishedAchivement() {
+        inputComment.setVisibility(View.VISIBLE);
+        selector.setVisibility(View.GONE);
+    }
+
+    private void visibleForActiveAchivement() {
+        inputComment.setVisibility(View.GONE);
+        selector.setVisibility(View.VISIBLE);
+        achivementImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent,
+                        "Select Picture"), SELECT_PICTURE);
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getNewAchivement(Status.FAILED);
+                Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
+            }
+        });
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(selectedImageUri != null){
+                    try {
+                        new Thread(() -> {
+//                                    MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
+//                                    System.out.println("editAccountConfirm: " + MainActivity.user);
+                            byte[] imageBytes;
+                            try {
+                                InputStream inputStream = MainActivity.mainActivity.getContentResolver().openInputStream(selectedImageUri);
+                                imageBytes = HelpFunctions.getBytes(inputStream);
+                                inputStream.close();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            if(imageBytes != null){
+                                MainActivity.serverApi.loadImageAchivement(imageBytes, achivement);
+                            }
+                        }).start();
+
+                        achivement.setImage(imageName);
+                        getNewAchivement(Status.COMPLETED);
+                        Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+    }
+
+    private void loadAchivementImage() {
+        CompletableFuture.supplyAsync(() ->
+                        MainActivity.serverApi.getImageAchivement(achivement), executor)
+                .thenAccept(_bytes -> {
+//                        System.out.println("BYTES: " + (_bytes != null));
+                    if(_bytes != null){
+                        Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                        getActivity().runOnUiThread(() -> {
+                            achivementImage.setImageBitmap(photoUri);
+                        });
+                    }
+                });
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-    }
-
-    public void getNewAchivement(Status statusLastAchivement){
-        CompletableFuture.supplyAsync(() ->
-            MainActivity.serverApi.getNewAchivement(statusLastAchivement), executor)
-                .thenAccept(_user -> {
-                    MainActivity.user = _user;
-                });
     }
 
     @Override
@@ -244,5 +227,13 @@ public class AchivementFragment extends Fragment {
                 achivementImage.setImageURI(selectedImageUri);
             }
         }
+    }
+
+    public void getNewAchivement(Status statusLastAchivement){
+        CompletableFuture.supplyAsync(() ->
+                        MainActivity.serverApi.getNewAchivement(statusLastAchivement), executor)
+                .thenAccept(_user -> {
+                    MainActivity.user = _user;
+                });
     }
 }

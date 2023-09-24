@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 public class SearchFriendsFragment extends Fragment {
     private Executor executor = Executors.newSingleThreadExecutor();
     private FragmentSearchFriendsBinding fragmentSearchFriendsBinding;
+    private FriendAdapter friendAdapter;
 
     public SearchFriendsFragment() {
         // Required empty public constructor
@@ -44,39 +45,47 @@ public class SearchFriendsFragment extends Fragment {
 
         EditText searcher = root.findViewById(R.id.search_friend_search_field);
 
-        if(MainActivity.serverApi != null){//Друзья
-            RecyclerView friendsRV = root.findViewById(R.id.search_friend_rv);
-            friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+        if(MainActivity.serverApi != null){
+            createFriendsAdapter(root);
 
-            FriendAdapter friendAdapter = new FriendAdapter();
-            CompletableFuture.supplyAsync(() -> MainActivity.serverApi.getUsers(), executor)
-                    .thenAccept(users -> {
-                        getActivity().runOnUiThread(() -> {
-                            friendAdapter.Set((ArrayList<User>) users);
-                        });
-                    });
-
-            friendsRV.setAdapter(friendAdapter);
-            //!Друзья
-            searcher.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    CompletableFuture.supplyAsync(() ->
-                                    MainActivity.serverApi.getUsersByUsername(searcher.getText().toString()), executor)
-                            .thenAccept(users -> {
-                                getActivity().runOnUiThread(() -> {
-                                    friendAdapter.Set((ArrayList<User>) users);
-                                });
-                            });
-                }
-            });
+            searcherSettings(searcher);
         }
 
         return root;
+    }
+
+    private void searcherSettings(EditText searcher){
+        searcher.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable editable) {
+                CompletableFuture.supplyAsync(() ->
+                                MainActivity.serverApi.getUsersByUsername(searcher.getText().toString()), executor)
+                        .thenAccept(users -> {
+                            getActivity().runOnUiThread(() -> {
+                                friendAdapter.Set((ArrayList<User>) users);
+                            });
+                        });
+            }
+        });
+    }
+
+    private void createFriendsAdapter(View root) {
+        RecyclerView friendsRV = root.findViewById(R.id.search_friend_rv);
+        friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+
+        friendAdapter = new FriendAdapter();
+        CompletableFuture.supplyAsync(() -> MainActivity.serverApi.getUsers(), executor)
+                .thenAccept(users -> {
+                    getActivity().runOnUiThread(() -> {
+                        friendAdapter.Set((ArrayList<User>) users);
+                    });
+                });
+
+        friendsRV.setAdapter(friendAdapter);
     }
 
     @Override

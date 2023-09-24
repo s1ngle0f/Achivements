@@ -37,67 +37,55 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AccountFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class AccountFragment extends Fragment {
     private Executor executor = Executors.newSingleThreadExecutor();
     private FragmentAccountBinding binding;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    View root;
+    Bundle args;
+    TextView accountLogin;
+    TextView accountDescription;
+    ImageButton settingsButton;
+    ImageView avatar;
+    Button subscribeButton;
+    RecyclerView accountLastAchivementsRV;
 
     public AccountFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AccountFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AccountFragment newInstance(String param1, String param2) {
-        AccountFragment fragment = new AccountFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        args = getArguments();
+        User user = getUserAccount();
         binding = FragmentAccountBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        Bundle args = getArguments();
-        TextView accountLogin = root.findViewById(R.id.account_login);
-        TextView accountDescription = root.findViewById(R.id.account_descripton);
-        ImageButton settingsButton = root.findViewById(R.id.account_settings_button);
-        ImageView avatar = root.findViewById(R.id.account_avatar);
-        Button subscribeButton = root.findViewById(R.id.account_subscribe_button);
-        RecyclerView accountLastAchivementsRV = root.findViewById(R.id.account_achivement_rv);
+        init();
+        if(user != null){
+            buttonListeners(user);
+            chooseAccountMode(user);
+            loadAvatar(user);
+            putIntoTemplate(user);
+        }else{
+            Intent myIntent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(myIntent);
+        }
+        return root;
+    }
+
+    private void init(){
+        root = binding.getRoot();
+        accountLogin = root.findViewById(R.id.account_login);
+        accountDescription = root.findViewById(R.id.account_descripton);
+        settingsButton = root.findViewById(R.id.account_settings_button);
+        avatar = root.findViewById(R.id.account_avatar);
+        subscribeButton = root.findViewById(R.id.account_subscribe_button);
+        accountLastAchivementsRV = root.findViewById(R.id.account_achivement_rv);
         accountLastAchivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+        if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.VISIBLE);
+    }
+
+    private void buttonListeners(User user){
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,48 +93,73 @@ public class AccountFragment extends Fragment {
                 startActivity(myIntent);
             }
         });
-        if(MainActivity.BottomNV != null) MainActivity.BottomNV.setVisibility(View.VISIBLE);
-        User user = null;
-        if(args != null) {
-            if (args.getBoolean("isSelfAccount", true)) {
-                root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
-                user = MainActivity.user;
-                String projectFolderPath = MainActivity.mainActivity.getApplicationContext().getFilesDir() + "/project/";
-                String imageName = "avatar.jpg"; // Change the image name as needed
-                File avatarImageFile = new File(projectFolderPath + imageName);
-                if(avatarImageFile.exists())
-                    avatar.setImageURI(Uri.fromFile(avatarImageFile));
-                System.out.println("ISSELF ACC " + user);
-            }
-            else{
-                root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
-                user = (User) args.getSerializable("account");
-                if(MainActivity.user.equals(user)) {
-                    root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
-                    root.findViewById(R.id.account_settings_button).setVisibility(View.VISIBLE);
+        subscribeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(MainActivity.user == null){
+                    Intent myIntent = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(myIntent);
+                }else{
+                    if(MainActivity.user.getFriends().stream().anyMatch(user1 -> user1.equals(user))){
+                        MainActivity.user.removeFriend(user);
+                        subscribeButton.setText("Подписаться");
+                    }else{
+                        MainActivity.user.addFriend(user);
+                        subscribeButton.setText("Отписаться");
+                    }
+
+                    CompletableFuture.supplyAsync(() ->
+                                    MainActivity.serverApi.editUser(MainActivity.user), executor)
+                            .thenAccept(_user -> {
+                                MainActivity.user = _user;
+                            });
                 }
-                int userId = user.getId();
-                CompletableFuture.supplyAsync(() ->
-                                MainActivity.serverApi.getAvatarById(userId), executor)
-                        .thenAccept(_bytes -> {
-//                        System.out.println("BYTES: " + (_bytes != null));
-                            if(_bytes != null){
-                                Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
-                                getActivity().runOnUiThread(() -> {
-                                    avatar.setImageBitmap(photoUri);
-                                });
-                            }
-                        });
-                System.out.println("NOSELF ACC " + user);
             }
-        }
-        else {
+        });
+    }
+
+    private void chooseAccountMode(User user){
+        if(user != null && user.equals(MainActivity.user)){
             root.findViewById(R.id.account_subscribe_button).setVisibility(View.GONE);
-            user = MainActivity.user;
+            System.out.println("ACC " + user);
+        }else{
+            root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
+            System.out.println("NOSELF ACC " + user);
+        }
+    }
+
+    private User getUserAccount(){
+        if(args == null) return MainActivity.user;
+        if(args.getBoolean("isSelfAccount", true)) return MainActivity.user;
+        return (User) args.getSerializable("account");
+    }
+
+    private void generateUserAchivements(User user) {
+        if(user.getAchivements() != null){
+            AchivementAdapter achivementAdapter = new AchivementAdapter(user);
+            ArrayList<Achivement> reversedList = new ArrayList<>(user.getAchivements());
+            Collections.reverse(reversedList);
+            achivementAdapter.Add(reversedList);
+            accountLastAchivementsRV.setAdapter(achivementAdapter);
+        }
+    }
+
+    private void putIntoTemplate(User user){
+        if(user != null) {
+            accountLogin.setText(user.getUsername());
+            accountDescription.setText(user.getDescription());
+            if(MainActivity.user != null && MainActivity.user.getFriends() != null && MainActivity.user.getFriends().stream().anyMatch(user1 -> user1.equals(user))){
+                subscribeButton.setText("Отписаться");
+            }
+            generateUserAchivements(user);
+        }
+    }
+
+    private void loadAvatar(User user){
+        if(user != null && user.equals(MainActivity.user)){
             CompletableFuture.supplyAsync(() ->
                             MainActivity.serverApi.getAvatar(), executor)
                     .thenAccept(_bytes -> {
-//                        System.out.println("BYTES: " + (_bytes != null));
                         if(_bytes != null){
                             Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
                             getActivity().runOnUiThread(() -> {
@@ -154,50 +167,18 @@ public class AccountFragment extends Fragment {
                             });
                         }
                     });
-            System.out.println("ACC " + user);
-        }
-        if(user != null) {
-            accountLogin.setText(user.getUsername());
-            accountDescription.setText(user.getDescription());
-            User finalUser = user;
-            if(MainActivity.user != null && MainActivity.user.getFriends() != null && MainActivity.user.getFriends().stream().anyMatch(user1 -> user1.equals(finalUser))){
-                subscribeButton.setText("Отписаться");
-            }
-            subscribeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(MainActivity.user == null){
-                        Intent myIntent = new Intent(getActivity(), LoginActivity.class);
-                        startActivity(myIntent);
-                    }else{
-                        if(MainActivity.user.getFriends().stream().anyMatch(user1 -> user1.equals(finalUser))){
-                            MainActivity.user.removeFriend(finalUser);
-                            subscribeButton.setText("Подписаться");
-                        }else{
-                            MainActivity.user.addFriend(finalUser);
-                            subscribeButton.setText("Отписаться");
-                        }
-
-                        CompletableFuture.supplyAsync(() ->
-                                        MainActivity.serverApi.editUser(MainActivity.user), executor)
-                                .thenAccept(_user -> {
-                                    MainActivity.user = _user;
-                                });
-                    }
-                }
-            });
-            if(user.getAchivements() != null){
-                AchivementAdapter achivementAdapter = new AchivementAdapter(user);
-                ArrayList<Achivement> reversedList = new ArrayList<>(user.getAchivements());
-                Collections.reverse(reversedList);
-                achivementAdapter.Add(reversedList);
-                accountLastAchivementsRV.setAdapter(achivementAdapter);
-            }
         }else{
-            root.findViewById(R.id.account_settings_button).setVisibility(View.GONE);
-            Intent myIntent = new Intent(getActivity(), LoginActivity.class);
-            startActivity(myIntent);
+            int userId = user.getId();
+            CompletableFuture.supplyAsync(() ->
+                            MainActivity.serverApi.getAvatarById(userId), executor)
+                    .thenAccept(_bytes -> {
+                        if(_bytes != null){
+                            Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                            getActivity().runOnUiThread(() -> {
+                                avatar.setImageBitmap(photoUri);
+                            });
+                        }
+                    });
         }
-        return root;
     }
 }

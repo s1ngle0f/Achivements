@@ -42,45 +42,50 @@ private FragmentHomeBinding binding;
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         System.out.println("HOME_Fragment");
-        if(MainActivity.user != null) {//Друзья
+        if(MainActivity.user != null) {
             if(MainActivity.user.getFriends() != null){
-                RecyclerView friendsRV = root.findViewById(R.id.friends_rv);
-                friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
-
-                FriendAdapter friendAdapter = new FriendAdapter();
-
-                System.out.println("Friends: " + MainActivity.user.getFriends());
-                friendAdapter.Add(MainActivity.user.getFriends().stream()
-                        .collect(Collectors.toList()));
-
-                friendsRV.setAdapter(friendAdapter);
+                createFriendsAdapter(root);
             }
-            //!Друзья
-
             if(MainActivity.user.getAchivements() != null){//Ачивки
-                RecyclerView achivementsRV = root.findViewById(R.id.achivement_rv);
-                achivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
-
-                AchivementAdapter achivementAdapter = new AchivementAdapter(MainActivity.user);
-                ArrayList<Achivement> reversedList = new ArrayList<>(MainActivity.user.getAchivements());
-                Collections.reverse(reversedList);
-                achivementAdapter.Add(reversedList);
-                achivementsRV.setAdapter(achivementAdapter);
-
-                TextView homeActiveAchivement = root.findViewById(R.id.home_active_task);
-                Achivement activeAchivement = MainActivity.user.getActiveAchivement();
-                if(activeAchivement != null)
-                    homeActiveAchivement.setText(activeAchivement.getText());
+                createAchivementsAdapter(root);
             }
         }
 
         return root;
     }
 
+    private void createAchivementsAdapter(View root) {
+        RecyclerView achivementsRV = root.findViewById(R.id.achivement_rv);
+        achivementsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+
+        AchivementAdapter achivementAdapter = new AchivementAdapter(MainActivity.user);
+        ArrayList<Achivement> reversedList = new ArrayList<>(MainActivity.user.getAchivements());
+        Collections.reverse(reversedList);
+        achivementAdapter.Add(reversedList);
+        achivementsRV.setAdapter(achivementAdapter);
+
+        TextView homeActiveAchivement = root.findViewById(R.id.home_active_task);
+        Achivement activeAchivement = MainActivity.user.getActiveAchivement();
+        if(activeAchivement != null)
+            homeActiveAchivement.setText(activeAchivement.getText());
+    }
+
+    private void createFriendsAdapter(View root) {
+        RecyclerView friendsRV = root.findViewById(R.id.friends_rv);
+        friendsRV.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
+
+        FriendAdapter friendAdapter = new FriendAdapter();
+
+        System.out.println("Friends: " + MainActivity.user.getFriends());
+        friendAdapter.Add(MainActivity.user.getFriends().stream()
+                .collect(Collectors.toList()));
+
+        friendsRV.setAdapter(friendAdapter);
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //Активная(текущая) задача
         LinearLayout activeAchivement = view.findViewById(R.id.current_achivement);
         activeAchivement.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +97,6 @@ private FragmentHomeBinding binding;
                 Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_achivementFragment, bundle);
             }
         });
-        //
         if(MainActivity.BottomNV != null)
             MainActivity.BottomNV.setVisibility(View.VISIBLE);
     }

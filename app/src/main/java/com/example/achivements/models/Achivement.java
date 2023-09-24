@@ -16,7 +16,7 @@ public class Achivement implements Serializable {
     private Status status = Status.ACTIVE;
     private String image;
     private Set<Comment> comments = new HashSet<>();
-//    private User user;
+    private int ownerId;
 
     public void addComment(Comment comment){
         boolean isContainComment = comments.stream().anyMatch(_comment -> _comment.getId() == comment.getId());
@@ -91,5 +91,13 @@ public class Achivement implements Serializable {
 
     public void setComments(Set<Comment> comments) {
         this.comments = comments;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 }
