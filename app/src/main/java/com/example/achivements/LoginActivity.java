@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.achivements.api.ServerApi;
 import com.example.achivements.models.AuthentificationRequest;
@@ -23,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String registration = "Регистрация";
     private static final String entrance = "Вход";
     private static final String enter = "Войти";
+    private static final String INVALID_DATA = "Введеные данные неправильные";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,12 +75,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private void logIn(String login, String password, String passwordTwice){
         String jwt = null;
-        User _user;
+        User _user = null;
         if(loginReg == LoginReg.LOGIN) {
             jwt = MainActivity.serverApi.login(new AuthentificationRequest(login, password));
         }else if(loginReg == LoginReg.REG && password.equals(passwordTwice)){
             _user = MainActivity.serverApi.createUser(new User(login, password));
-            jwt = MainActivity.serverApi.login(new AuthentificationRequest(_user.getUsername(), _user.getPassword()));
+            if(_user != null)
+                jwt = MainActivity.serverApi.login(new AuthentificationRequest(_user.getUsername(), _user.getPassword()));
         }
         if (jwt != null && !jwt.isEmpty()) {
             ServerApi.setJwt(jwt);
@@ -87,9 +90,19 @@ public class LoginActivity extends AppCompatActivity {
                 MainActivity.editor.putString(HelpFunctions.jwt, jwt);
                 MainActivity.editor.apply();
                 MainActivity.user = _user;
+                System.out.println(_user);
+                System.out.println(jwt);
+                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(myIntent);
+            }else{
+                runOnUiThread(() -> {
+                    Toast.makeText(getApplicationContext(), INVALID_DATA, Toast.LENGTH_SHORT).show();
+                });
             }
+        }else{
+            runOnUiThread(() -> {
+                Toast.makeText(getApplicationContext(), INVALID_DATA, Toast.LENGTH_SHORT).show();
+            });
         }
-        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(myIntent);
     }
 }

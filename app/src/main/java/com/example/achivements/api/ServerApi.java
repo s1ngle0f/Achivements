@@ -59,7 +59,6 @@ public class ServerApi {
             res = callLogin.execute().body().getToken();
         }catch (Exception e){
             System.out.println(e.toString());
-            throw new RuntimeException(e);
         }
         return res;
     }
@@ -70,7 +69,7 @@ public class ServerApi {
         try{
             res = callGetUsers.execute().body();
         }catch (Exception e){
-            throw new RuntimeException(e);
+//            throw new RuntimeException(e);
         }
         return res;
     }
