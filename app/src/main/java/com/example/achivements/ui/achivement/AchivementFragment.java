@@ -168,7 +168,9 @@ public class AchivementFragment extends Fragment {
             public void onClick(View view) {
                 new Thread(() -> {
                     getNewAchivement(Status.FAILED);
-                    Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
+                    getActivity().runOnUiThread(() -> {
+                        Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
+                    });
                 }).start();
             }
         });
@@ -193,9 +195,11 @@ public class AchivementFragment extends Fragment {
                             if(imageBytes != null){
                                 MainActivity.serverApi.loadImageAchivement(imageBytes, achivement);
                             }
-                            achivement.setImage(imageName);
                             getNewAchivement(Status.COMPLETED);
-                            Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
+                            getActivity().runOnUiThread(() -> {
+                                achivement.setImage(imageName);
+                                Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
+                            });
                         }).start();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
