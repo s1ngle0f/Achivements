@@ -1,5 +1,7 @@
 package com.example.achivements.models;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Comment {
+public class Comment implements Serializable {
     private int id = 0;
     private String text;
     private int userId;
