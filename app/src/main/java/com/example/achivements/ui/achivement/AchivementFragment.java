@@ -166,13 +166,10 @@ public class AchivementFragment extends Fragment {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getNewAchivement(Status.FAILED);
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-
-                }
-                Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
+                new Thread(() -> {
+                    getNewAchivement(Status.FAILED);
+                    Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
+                }).start();
             }
         });
         acceptButton.setOnClickListener(new View.OnClickListener() {
@@ -196,12 +193,10 @@ public class AchivementFragment extends Fragment {
                             if(imageBytes != null){
                                 MainActivity.serverApi.loadImageAchivement(imageBytes, achivement);
                             }
+                            achivement.setImage(imageName);
+                            getNewAchivement(Status.COMPLETED);
+                            Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
                         }).start();
-
-                        achivement.setImage(imageName);
-                        getNewAchivement(Status.COMPLETED);
-                        Thread.sleep(100);
-                        Navigation.findNavController(view).navigate(R.id.action_achivementFragment_to_navigation_home);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -276,10 +271,6 @@ public class AchivementFragment extends Fragment {
     }
 
     public void getNewAchivement(Status statusLastAchivement){
-        CompletableFuture.supplyAsync(() ->
-                        MainActivity.serverApi.getNewAchivement(statusLastAchivement), executor)
-                .thenAccept(_user -> {
-                    MainActivity.user = _user;
-                });
+        MainActivity.user = MainActivity.serverApi.getNewAchivement(statusLastAchivement);
     }
 }
