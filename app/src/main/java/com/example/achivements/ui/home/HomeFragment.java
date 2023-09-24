@@ -88,12 +88,14 @@ private FragmentHomeBinding binding;
 
     private void loadAchivementImage() {
         new Thread(() -> {
-            AchivementImage _achivementImageData = MainActivity.database.achivementImageDao().getImageByAchivementId(activeAchivement.getId());
-            if(_achivementImageData != null) {
-                Bitmap photoUri = BitmapFactory.decodeByteArray(_achivementImageData.imageData, 0, _achivementImageData.imageData.length);
-                getActivity().runOnUiThread(() -> {
-                    makeSelfieCamera.setImageBitmap(photoUri);
-                });
+            if(activeAchivement != null){
+                AchivementImage _achivementImageData = MainActivity.database.achivementImageDao().getImageByAchivementId(activeAchivement.getId());
+                if (_achivementImageData != null) {
+                    Bitmap photoUri = BitmapFactory.decodeByteArray(_achivementImageData.imageData, 0, _achivementImageData.imageData.length);
+                    getActivity().runOnUiThread(() -> {
+                        makeSelfieCamera.setImageBitmap(photoUri);
+                    });
+                }
             }
         }).start();
     }
