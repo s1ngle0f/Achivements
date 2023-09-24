@@ -44,7 +44,7 @@ public static SharedPreferences.Editor editor;
 public static BottomNavigationView BottomNV;
 private Executor executor = Executors.newSingleThreadExecutor();
 public static User user = null;
-public static ServerApi serverApi; //При работе с реальным бэком вернуть интерфейс
+public static ServerApi serverApi;
 public static MainActivity mainActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -25,6 +25,7 @@ import com.example.achivements.HelpFunctions;
 import com.example.achivements.MainActivity;
 import com.example.achivements.R;
 import com.example.achivements.adapters.CommentAdapter;
+import com.example.achivements.db.model.AchivementImage;
 import com.example.achivements.models.Achivement;
 import com.example.achivements.models.AuthentificationRequest;
 import com.example.achivements.models.Comment;
@@ -72,6 +73,8 @@ public class AchivementFragment extends Fragment {
     Achivement achivement;
     User owner;
     CommentAdapter commentAdapter;
+
+    boolean isLoadFromLocalDB = false;
 
     private void init(View root){
         args = getArguments();
@@ -169,16 +172,20 @@ public class AchivementFragment extends Fragment {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(selectedImageUri != null){
+                if(selectedImageUri != null || isLoadFromLocalDB){
                     try {
                         new Thread(() -> {
 //                                    MainActivity.user = MainActivity.serverApi.editUser(MainActivity.user);
 //                                    System.out.println("editAccountConfirm: " + MainActivity.user);
                             byte[] imageBytes;
                             try {
-                                InputStream inputStream = MainActivity.mainActivity.getContentResolver().openInputStream(selectedImageUri);
-                                imageBytes = HelpFunctions.getBytes(inputStream);
-                                inputStream.close();
+                                if(!isLoadFromLocalDB){
+                                    InputStream inputStream = MainActivity.mainActivity.getContentResolver().openInputStream(selectedImageUri);
+                                    imageBytes = HelpFunctions.getBytes(inputStream);
+                                    inputStream.close();
+                                }else{
+                                    imageBytes = MainActivity.database.achivementImageDao().getImageByAchivementId(achivement.getId()).imageData;
+                                }
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
@@ -199,17 +206,32 @@ public class AchivementFragment extends Fragment {
     }
 
     private void loadAchivementImage() {
-        CompletableFuture.supplyAsync(() ->
-                        MainActivity.serverApi.getImageAchivement(achivement), executor)
-                .thenAccept(_bytes -> {
-//                        System.out.println("BYTES: " + (_bytes != null));
-                    if(_bytes != null){
-                        Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
-                        getActivity().runOnUiThread(() -> {
-                            achivementImage.setImageBitmap(photoUri);
+        new Thread(() -> {
+            AchivementImage _achivementImageData = MainActivity.database.achivementImageDao().getImageByAchivementId(achivement.getId());
+            if(_achivementImageData == null) {
+                System.out.println("LOAD FROM SERVER");
+                CompletableFuture.supplyAsync(() ->
+                                MainActivity.serverApi.getImageAchivement(achivement), executor)
+                        .thenAccept(_bytes -> {
+                            if (_bytes != null) {
+                                Bitmap photoUri = BitmapFactory.decodeByteArray(_bytes, 0, _bytes.length);
+                                getActivity().runOnUiThread(() -> {
+                                    achivementImage.setImageBitmap(photoUri);
+                                });
+                                AchivementImage newAchivementImage = new AchivementImage();
+                                newAchivementImage.achivementId = achivement.getId();
+                                newAchivementImage.imageData = _bytes;
+                                MainActivity.database.achivementImageDao().insert(newAchivementImage);
+                            }
                         });
-                    }
+            }else{
+                Bitmap photoUri = BitmapFactory.decodeByteArray(_achivementImageData.imageData, 0, _achivementImageData.imageData.length);
+                getActivity().runOnUiThread(() -> {
+                    achivementImage.setImageBitmap(photoUri);
                 });
+                isLoadFromLocalDB = true;
+            }
+        }).start();
     }
 
     @Override
@@ -225,6 +247,26 @@ public class AchivementFragment extends Fragment {
             if (requestCode == SELECT_PICTURE) {
                 selectedImageUri = data.getData();
                 achivementImage.setImageURI(selectedImageUri);
+                new Thread(() -> {
+                    AchivementImage _achivementImage = MainActivity.database.achivementImageDao().getImageByAchivementId(achivement.getId());
+                    byte[] imageBytes;
+                    try {
+                        InputStream inputStream = MainActivity.mainActivity.getContentResolver().openInputStream(selectedImageUri);
+                        imageBytes = HelpFunctions.getBytes(inputStream);
+                        inputStream.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if(_achivementImage == null){
+                        _achivementImage = new AchivementImage();
+                        _achivementImage.achivementId = achivement.getId();
+                        _achivementImage.imageData = imageBytes;
+                        MainActivity.database.achivementImageDao().insert(_achivementImage);
+                    }else{
+                        _achivementImage.imageData = imageBytes;
+                        MainActivity.database.achivementImageDao().insert(_achivementImage);
+                    }
+                }).start();
             }
         }
     }

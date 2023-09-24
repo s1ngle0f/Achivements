@@ -35,7 +35,7 @@ public class ExampleInstrumentedTest {
         // Инициализируем базу данных в методе setUp.
 //        context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         context = getApplicationContext();
-        database = Room.databaseBuilder(context, LocalDatabase.class, "testRoomDBZero")
+        database = Room.databaseBuilder(context, LocalDatabase.class, "testRoomDBOne")
                 .allowMainThreadQueries() // Позволяет выполнять запросы на главном потоке (для демонстрации, не рекомендуется в реальном приложении)
                 .build();
     }
@@ -45,6 +45,10 @@ public class ExampleInstrumentedTest {
         AchivementImage achivementImage = new AchivementImage();
         achivementImage.achivementId = 3;
         database.achivementImageDao().insert(achivementImage);
+        getAllAchivementImages();
+        AchivementImage achivementImage1 = database.achivementImageDao().getImageByAchivementId(3);
+        achivementImage1.achivementId = 5;
+        database.achivementImageDao().insert(achivementImage1);
         getAllAchivementImages();
     }
 
